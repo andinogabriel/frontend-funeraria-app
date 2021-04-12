@@ -3,9 +3,7 @@ import ReactDOM from 'react-dom';
 import { FunerariaApp } from './FunerariaApp';
 
 ReactDOM.render(
-  <React.StrictMode>
-    <FunerariaApp />
-  </React.StrictMode>,
+  <FunerariaApp />,
   document.getElementById('root')
 );
 

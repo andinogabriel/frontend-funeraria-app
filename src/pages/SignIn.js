@@ -49,7 +49,7 @@ export const SignIn = () => {
             .catch(error => {
                 setErrores({
                     //error.response.data.message
-                    auth: "No se puede iniciar sesion con esos credenciales."
+                    auth: error.response.data.message
                 });
             });
     };
