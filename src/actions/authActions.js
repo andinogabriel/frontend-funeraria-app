@@ -6,40 +6,48 @@ import { LOGIN_ENDPOINT, USERS_ENDPOINT } from './../helpers/endpoints';
 
 
 //Dispatch en caso de llamar a otra accion
-export const startLoginUser = (userData) => dispatch => {
+export const startLoginUser = (userData) =>  {
     
-    return new Promise((resolve, reject) => {
-        axios.post(LOGIN_ENDPOINT, userData, {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        }).then(response => {
+    return async (dispatch) => {
+        try {
+            const resp  = await axios.post(LOGIN_ENDPOINT, userData, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
             
-            //Procesamos lo que viene del backend
-            const {authorization} = response.headers;
-    
+            const {authorization} = resp.headers;
+            
+
             //Creamos una key en localStorage llamada jwtToken y le damos el value authotization que es el token que viene del header del backend
             localStorage.setItem('jwtToken', authorization);
-            
-            
+
             const decoded = jwt_decode(authorization); //Decodificamos lo que esta en authorization
 
             //Crear funcion para añadir token a axios, para que en cada peticion se envie el token automaticamente para no estar poniendole en los headers
             setAuthToken(authorization);
-           
-            dispatch(setCurrentUser({
-                user: decoded,
-                loggedIn: true
-            }));
 
+            try {
+                const response  = await axios.get(USERS_ENDPOINT);
+                const {firstName, lastName} = response.data;
+                dispatch(setCurrentUser({
+                    user: {
+                        ...decoded,
+                        lastName,
+                        firstName
+                    },
+                    loggedIn: true
+                }));
+            } catch (error) {
+                console.log(error);
+            }
             
-            resolve(response);
-        })
-        .catch(error => {
-            reject(error);
-        });
-    });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    
                      
 };
 
