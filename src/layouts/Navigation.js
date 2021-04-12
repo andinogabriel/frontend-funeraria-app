@@ -7,9 +7,10 @@ import { logoutUser } from './../actions/authActions';
 
 export const Navigation = () => {
 
-    const {loggedIn} = useSelector(state => state.auth);
+    const {loggedIn, user} = useSelector(state => state.auth);
     const dispatch = useDispatch();
 
+   
     const logout = () => {
         dispatch(logoutUser());
     };
@@ -40,7 +41,7 @@ export const Navigation = () => {
                             )
                             :
                             (
-                                <NavDropdown title="UserName" id="collasible-nav-dropdown">
+                                <NavDropdown title={`${user.lastName} ${user.firstName}`} id="collasible-nav-dropdown">
                                     <NavDropdown.Item href="#action/3.1">Mis datos</NavDropdown.Item>
                                     <NavDropdown.Item href="#action/3.2">Mis afiliados</NavDropdown.Item>
                                     <NavDropdown.Item onClick={logout}>Cerrar sesión</NavDropdown.Item>
