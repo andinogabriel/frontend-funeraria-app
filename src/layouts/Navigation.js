@@ -43,8 +43,9 @@ export const Navigation = () => {
                             (
                                 <NavDropdown title={`${user.lastName} ${user.firstName}`} id="collasible-nav-dropdown">
                                     <NavDropdown.Item href="#action/3.1">Mis datos</NavDropdown.Item>
-                                    <NavDropdown.Item href="#action/3.2">Mis afiliados</NavDropdown.Item>
+                                    <NavDropdown.Item as={NavLink} to={'/mis-afiliados'}>Mis afiliados</NavDropdown.Item>
                                     <NavDropdown.Item onClick={logout}>Cerrar sesión</NavDropdown.Item>
+                                    <NavDropdown.Item as={NavLink} to={'/proveedores'}>Proveedores</NavDropdown.Item>
                                 </NavDropdown>
                             )
                     }
