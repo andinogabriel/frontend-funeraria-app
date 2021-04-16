@@ -186,7 +186,7 @@ export const AddSupplierForm = () => {
                         <Form.Label>Página web</Form.Label>
                         <InputGroup className="mb-2 mr-sm-2">
                             <InputGroup.Prepend>
-                                <InputGroup.Text><FontAwesomeIcon icon={['far', 'fa-file']} /></InputGroup.Text>
+                                <InputGroup.Text><FontAwesomeIcon icon={['fas', 'file-alt']} /></InputGroup.Text>
                             </InputGroup.Prepend>
                             <Form.Control
                                 type="text"                           
