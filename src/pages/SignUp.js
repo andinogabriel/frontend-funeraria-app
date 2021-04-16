@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { registerUser } from '../actions/authActions';
 import { startLoginUser } from './../actions/authActions';
 import { Alert } from 'react-bootstrap';
-import { SignUpForm } from '../components/SignUpForm';
+import { SignUpForm } from './../components/forms/SignUpForm';
 
 
 export const SignUp = () => {

@@ -3,8 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { Container, Row, Col} from 'react-bootstrap';
 import { startLoginUser } from './../actions/authActions';
-import { SignInForm } from '../components/SignInForm';
-
+import { SignInForm } from './../components/forms/SignInForm';
 
 
 export const SignIn = () => {
