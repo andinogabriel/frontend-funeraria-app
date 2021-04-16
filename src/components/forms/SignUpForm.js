@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from "yup";
+import * as yup from 'yup';
 
 
 const schema = yup.object().shape({
@@ -16,10 +16,11 @@ const schema = yup.object().shape({
     rePassword: yup.string()
         .oneOf([yup.ref('password'), null], 'Las contraseñas deben coincidir.')
         .required(''),
-  });
+});
 
 export const SignUpForm = ({onSubmitCallback}) => {
 
+    
     const { 
         register, 
         handleSubmit, 
@@ -83,7 +84,7 @@ export const SignUpForm = ({onSubmitCallback}) => {
                     </div>
                 </div>
 
-                <div className="input-group col-lg-6 mb-4">
+                <div className="input-group col-lg-12 mb-4">
                     <div className="input-group-prepend">
                         <span className="input-group-text bg-white px-4 border-md border-right-0">
                             <i className="fa fa-lock text-muted"/>
@@ -96,23 +97,12 @@ export const SignUpForm = ({onSubmitCallback}) => {
                         {...register("password", { required: true, minLength: 8, maxLength: 30})}
                     />
                 </div>
-                {
-                    errors?.password?.type === "minLength" 
-                        &&
-                        <div className="text-danger text-small d-block mb-2 ml-3 col-lg-12 mb-4">
-                            La contraseña debe tener mas de 8 caracteres.
-                        </div>
-                }
-                {
-                    errors?.password?.type === "maxLength" 
-                        &&
-                        <div className="text-danger text-small d-block mb-2 ml-3 col-lg-12 mb-4">
-                            La contraseña no debe superar los 30 caracteres.
-                        </div>
-                }
+                <div className="text-danger text-small d-block mb-2 ml-3 col-lg-12 mb-4">
+                    {errors.password?.message}
+                </div>
 
                 
-                <div className="input-group col-lg-6 mb-4">
+                <div className="input-group col-lg-12 mb-4">
                     <div className="input-group-prepend">
                         <span className="input-group-text bg-white px-4 border-md border-right-0">
                             <i className="fa fa-lock text-muted"/>
