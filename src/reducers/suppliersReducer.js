@@ -2,6 +2,7 @@ import { types } from './../types/types';
 
 const initialState = {
     suppliers: [],
+    totalPages: '',
     fetched: false,
 };
 
@@ -14,7 +15,24 @@ export const suppliersReducer = (state = initialState, action) => {
             return {
                 ...state,
                 fetched: payload.fetched,
-                suppliers: payload.suppliers
+                suppliers: payload.suppliers,
+                totalPages: payload.totalPages
+            };
+        case types.suppliersAdNew:
+            return {
+                ...state,
+                fetched: payload.fetched,
+                suppliers: [
+                    ...state.suppliers,
+                    payload
+                ]
+            };
+        case types.suppliersDeleted:
+            return {
+                ...state,
+                suppliers: state.suppliers.filter(s => (
+                    s.id !== payload.id
+                ))
             };
         default:
             return state;

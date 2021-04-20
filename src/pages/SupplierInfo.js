@@ -37,9 +37,9 @@ export const SupplierInfo = ({supplier}) => {
                 <ListGroup.Item>Email:{supplier?.webPage ? webPage : " No tiene. "}</ListGroup.Item>
                 <ListGroup.Item>Numeros de telefono: 
                     {
-                        supplier?.mobileNumbers.length > 0 
+                        mobileNumbers?.length > 0 
                             ?
-                            supplier.mobileNumbers.map(m => (
+                            mobileNumbers.map(m => (
                                 " " + m.mobileNumber + " - "
                             ))
                             :

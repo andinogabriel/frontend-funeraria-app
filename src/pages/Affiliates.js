@@ -52,7 +52,7 @@ export const Affiliates = () => {
                                     <td>{affiliate.dni}</td>
                                     <td>{new Date().getFullYear() - new Date(affiliate.birthDate).getFullYear()}</td>
                                     <td>{affiliate.affiliateRelationship.name}</td>
-                                    <td>{affiliate.genderAffiliate.name}</td>
+                                    <td>{affiliate.affiliateGender.name}</td>
                                     <td>{dayjs(affiliate.startDate).format('DD/MM/YYYY')}</td>
                                 </tr>
                                

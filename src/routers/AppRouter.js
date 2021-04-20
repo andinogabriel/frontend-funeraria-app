@@ -12,6 +12,7 @@ import { Affiliates } from './../pages/Affiliates';
 import { Suppliers } from './../pages/Suppliers';
 import { AffiliateForm } from './../components/forms/AffiliateForm';
 import { AddSupplierForm } from './../components/forms/AddSupplierForm';
+import { Footer } from '../layouts/Footer';
 
 
 export const AppRouter = () => {
@@ -76,7 +77,7 @@ export const AppRouter = () => {
                     <Redirect to="/" /> 
                 </Switch>
             </Container>
-            
+            <Footer/>
         </Router>
     );
 };
