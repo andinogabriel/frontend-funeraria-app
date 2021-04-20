@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { Form, Button, Col, Card, InputGroup } from 'react-bootstrap';
 import { SUPPLIERS_ENDPOINT, MOBILE_NUMBERS_ENDPOINT } from '../../helpers/endpoints';
 import { getSuppliers } from './../../actions/suppliersAction';
+import { AddMobileNumbers } from './AddMobileNumbers';
 
 
 //Validaciones de los campos del formulario
@@ -24,7 +25,7 @@ export const AddSupplierForm = () => {
     const {id} = useParams();
     const dispatch = useDispatch();
     const [errores, setErrores] = useState({});
-    const [inputList, setInputList] = useState([{ mobileNumber: "", supplierNumber: id}]);
+    const [mobNumsList, setMobNumsList] = useState([{id: '', mobileNumber: "", supplierNumber: id}]);
     const history = useHistory();
 
     //React Hook form estructura
@@ -38,27 +39,47 @@ export const AddSupplierForm = () => {
                 try {
                     const resp = await axios.get(`${SUPPLIERS_ENDPOINT}/${id}`);
                     if(resp.data !== null) {
-                        const {name, nif, email, webPage} = resp.data;
+                        const {name, nif, email, webPage, mobileNumbers} = resp.data;
                         //Con estos setValues seteamos los values de los inputs del formulario, para que aparezcan rellenos con la informacion que nos devolvio el metodo get
                         setValue("name", name);  
                         setValue("nif", nif); 
                         setValue("webPage", webPage); 
-                        setValue("email", email);  
+                        setValue("email", email); 
+                        
+                        mobileNumbers.forEach((m,i) => {
+                            i !== 0
+                                ?
+                                setMobNumsList(i => [...i, {id: m.id, mobileNumber: m.mobileNumber, supplierNumber: id}])
+                                :
+                                setMobNumsList([{id: m.id, mobileNumber: m.mobileNumber, supplierNumber: id}]);
+                        });
                     }
                 } catch (error) {
                     setErrores(error);
                     console.log(error);
                 }
             }
-            fetchData(); 
+            fetchData();
         }
     }, [id, setValue]);
-
- 
+    
+    
     const onSubmit = async (data) => { 
         if(id) {
             try {
-                const response = await axios.put(`${SUPPLIERS_ENDPOINT}/${id}`, data);
+                if(mobNumsList.length > 0) {
+                    
+                    mobNumsList.map(async mobNum => {
+                        if(mobNum.id !== '') {
+                            await axios.put(`${MOBILE_NUMBERS_ENDPOINT}/${mobNum.id}`, mobNum);
+                        } else {
+                            await axios.post(MOBILE_NUMBERS_ENDPOINT, mobNum);
+                        }
+                    });
+                }
+                
+                await axios.put(`${SUPPLIERS_ENDPOINT}/${id}`, data);
+
             } catch (error) {
                 setErrores(error);
                 console.log(error);
@@ -67,20 +88,15 @@ export const AddSupplierForm = () => {
             try {
                 const resp = await axios.post(SUPPLIERS_ENDPOINT, data);
 
-                const addSuplierNumbers = async () => {
-                    inputList.map((x)=> (
-                        x.supplierNumber = resp.data.id
-                    ));
-                };
-                await addSuplierNumbers();
+                mobNumsList.map(async (x)=> (
+                    x.supplierNumber = resp.data.id
+                ));
+                
+                mobNumsList.map(async (mobNum) => (
+                    await axios.post(MOBILE_NUMBERS_ENDPOINT, mobNum)
+                ));   
 
-                const supplierNumbers = async () => {
-                    for (let i = 0; i < inputList.length; i++) {
-                        const mobNumber = inputList[i];
-                        await axios.post(MOBILE_NUMBERS_ENDPOINT, mobNumber);
-                    }
-                };
-                await supplierNumbers();
+            
             } catch (error) {
                 setErrores(error);
                 console.log(error);
@@ -100,26 +116,7 @@ export const AddSupplierForm = () => {
         history.push('/proveedores');
     };
 
-    const handleInputChange = (e, index) => {
-        e.preventDefault();
-        const { name, value } = e.target;
-        const list = [...inputList];
-        list[index][name] = value;
-        setInputList(list);
-    };  
-
-    const handleAddClick = (e) => {
-        e.preventDefault();
-        setInputList([...inputList, { mobileNumber: "", supplierNumber: id}]);
-    };
-
-    const handleRemoveInput = index => {
-        const list = [...inputList];
-        list.splice(index, 1);
-        setInputList(list);
-    };
-
-    console.log(inputList);
+    
     return (
         <Card body bg="dark" text="light" className="mt-5">
             <Card.Title>
@@ -198,44 +195,13 @@ export const AddSupplierForm = () => {
                     </Form.Group>
                 </Form.Row>
 
-                {
-                    inputList.map((item, i) => (
-                        <Form.Row key={i}>
-                            <Form.Group as={Col}>
-                                <Form.Label>Num. Tel</Form.Label>
-                                <InputGroup className="mb-2">
-                                    <InputGroup.Prepend>
-                                        <InputGroup.Text><FontAwesomeIcon icon={['fas', 'phone-alt']} /></InputGroup.Text>
-                                    </InputGroup.Prepend>
+                <AddMobileNumbers
+                    inputList={mobNumsList}
+                    deleteEndPoint={'http://localhost:8081/api/v1/mobileNumbers'}
+                    setInputList={setMobNumsList}
+                    initialValue={{id: '', mobileNumber: "", supplierNumber: id}}
+                />
 
-                                    <Form.Control
-                                        type="tel" 
-                                        name="mobileNumber"
-                                        value={item.mobileNumber}
-                                        placeholder="Numero de telefono"
-                                        onChange={(e) => handleInputChange(e, i)}
-                                    />
-                                </InputGroup>
-                                
-                            </Form.Group>
-                            {
-                                (inputList.length - 1 === i) 
-                                    &&
-                                    <div onClick={handleAddClick} className="mr-2 mt-4 text-primary">
-                                        <FontAwesomeIcon icon={['fas', 'plus-circle']} size="2x"/>
-                                    </div>
-  
-                            }
-                            {
-                                (inputList.length !== 1) 
-                                    &&
-                                    <div onClick={handleRemoveInput} className="mr-2 mt-4 text-danger">
-                                        <FontAwesomeIcon icon={['fas', 'minus-circle']}size="2x"/>
-                                    </div>
-                            }
-                        </Form.Row>
-                    ))
-                }
                 <Button variant="secondary" size="lg" block type="submit">
                     {
                         id ? "Actualizar" : "Registrar"
@@ -243,11 +209,9 @@ export const AddSupplierForm = () => {
                 </Button>
             </Form>
             
-           
             <Button size="sm" variant="light" type="button" as={NavLink} to={'/proveedores'} className="mt-4">
                 <FontAwesomeIcon icon={['fas', 'list']}/> Volver a proveedores
             </Button>
-            
         </Card>
     );
 };
