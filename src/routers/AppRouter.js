@@ -13,13 +13,17 @@ import { Suppliers } from './../pages/Suppliers';
 import { AffiliateForm } from './../components/forms/AffiliateForm';
 import { AddSupplierForm } from './../components/forms/AddSupplierForm';
 import { Footer } from '../layouts/Footer';
+import { AddAddressForm } from './../components/forms/AddAddressForm';
+import { AddOrUpdateItem } from './../pages/AddOrUpdateItem';
+import { Items } from './../pages/Items';
+import { AddOrUpdateBrand } from './../pages/AddOrUpdateBrand';
+import { Brands } from './../pages/Brands';
 
 
 export const AppRouter = () => {
 
     const {loggedIn} = useSelector(state => state.auth);
-
-
+    console.log(loggedIn);
     return (
         <Router>
              <div>
@@ -56,22 +60,61 @@ export const AppRouter = () => {
                         isAuthenticated={ loggedIn }
                     />
 
-                    <Route
+                  
+                    <PrivateRoute
                         exact path="/proveedores"
                         component={ Suppliers}
                         isAuthenticated={ loggedIn }
                     />
+                    
+                    
 
-                    <Route
+                    <PrivateRoute
                         exact path="/proveedor-formulario"
                         component={ AddSupplierForm}
                         isAuthenticated={ loggedIn }
                     />
 
-                    <Route
+                    <PrivateRoute
                         exact path="/editar-proveedor/:id"
                         component={ AddSupplierForm}
                         isAuthenticated={ loggedIn }
+                    />
+
+                    <PrivateRoute
+                        exact path="/address"
+                        component={ AddAddressForm}
+                        isAuthenticated={ loggedIn }
+                    />
+
+                    <Route
+                        exact path="/articulo-formulario"
+                        component={ AddOrUpdateItem}
+                    />
+
+                    <Route
+                        exact path="/editar-articulo/:id"
+                        component={ AddOrUpdateItem}
+                    />
+
+                    <Route
+                        exact path="/articulos"
+                        component={ Items}
+                    />
+
+                    <Route
+                        exact path="/marcas"
+                        component={ Brands}
+                    />
+
+                    <Route
+                        exact path="/agregar-marca"
+                        component={ AddOrUpdateBrand}
+                    />
+
+                    <Route
+                        exact path="/editar-marca/:id"
+                        component={ AddOrUpdateBrand}
                     />
                    
                     <Redirect to="/" /> 

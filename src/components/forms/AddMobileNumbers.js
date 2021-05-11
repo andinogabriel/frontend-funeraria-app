@@ -1,7 +1,8 @@
 import React from 'react';
 import axios from 'axios';
-import { Form, InputGroup, Col } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Grid, TextField, Box } from '@material-ui/core';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 export const AddMobileNumbers = ({inputList, deleteEndPoint, setInputList, initialValue}) => {
 
@@ -33,46 +34,41 @@ export const AddMobileNumbers = ({inputList, deleteEndPoint, setInputList, initi
         
     };
 
+
     return (
-        <>
+        <Grid container direction="row" justify="flex-start" alignItems="flex-start" spacing={1} >
         {
             inputList.map((item, i) => (
-                <Form.Row key={i}>
-                    <Form.Group as={Col}>
-                        <Form.Label>Num. Tel</Form.Label>
-                        <InputGroup className="mb-2">
-                            <InputGroup.Prepend>
-                                <InputGroup.Text><FontAwesomeIcon icon={['fas', 'phone-alt']} /></InputGroup.Text>
-                            </InputGroup.Prepend>
-
-                            <Form.Control
-                                type="tel" 
+                <React.Fragment key={i}>
+                        <Grid item xs={4} sm={5}> 
+                            <TextField
+                                fullWidth
+                                type="tel"
+                                label="Télefono"
+                                variant="outlined"
                                 name="mobileNumber"
                                 value={item.mobileNumber}
-                                placeholder="Numero de telefono"
                                 onChange={(e) => handleInputChange(e, i)}
                             />
-                        </InputGroup>
-                        
-                    </Form.Group>
-                    {
-                        (inputList.length - 1 === i) 
-                            &&
-                            <div onClick={handleAddClick} className="mr-2 mt-4 text-primary">
-                                <FontAwesomeIcon icon={['fas', 'plus-circle']} size="2x"/>
-                            </div>
+                        </Grid>
+                        {
+                            (inputList.length - 1 === i) 
+                                &&
+                                <Box color="primary" mt={2}>
+                                    <AddCircleOutlineIcon fontSize="large" onClick={handleAddClick} style={{color:"#1662D2"}}/>
+                                </Box>
 
-                    }
-                    {
-                        (inputList.length !== 1) 
-                            &&
-                            <div onClick={(e) => handleRemoveInput(e, i)} className="mr-2 mt-4 text-danger">
-                                <FontAwesomeIcon icon={['fas', 'minus-circle']}size="2x"/>
-                            </div>
-                    }
-                </Form.Row>
+                        }
+                        {
+                            (inputList.length !== 1) 
+                                &&
+                                <Box color="primary" mt={2}>
+                                    <HighlightOffIcon fontSize="large" onClick={(e) => handleRemoveInput(e, i)} style={{color:"#ff3333"}}/>
+                                </Box>
+                        }             
+                </React.Fragment>
             ))
         }
-        </>
+        </Grid> 
     );
 };

@@ -1,13 +1,50 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller  } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { TextField, Grid, Container, Avatar, Button, CssBaseline, Typography, Box } from "@material-ui/core";
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import { makeStyles } from '@material-ui/core/styles';
 
+const useStyles = makeStyles((theme) => ({
+    root: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: theme.spacing(2),
+    
+        '& .MuiTextField-root': {
+          margin: theme.spacing(1),
+          width: '300px',
+        },
+        '& .MuiButtonBase-root': {
+          margin: theme.spacing(2),
+        },
+    },
+    paper: {
+      marginTop: theme.spacing(1),
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+    },
+    avatar: {
+      margin: theme.spacing(1),
+      backgroundColor: theme.palette.secondary.main,
+    },
+    form: {
+      width: '100%', // Fix IE 11 issue.
+      marginTop: theme.spacing(3),
+    },
+    submit: {
+      margin: theme.spacing(3, 0, 2),
+    },
+}));
 
 const schema = yup.object().shape({
-    firstName: yup.string().required(),
-    lastName: yup.string().required(),
+    firstName: yup.string().required(''),
+    lastName: yup.string().required(''),
     email: yup.string().required('').email('Correo electronico invalido.'),
     password: yup.string()
             .min(8, 'La contraseña debe tener al menos 8 caracteres.')
@@ -20,119 +57,156 @@ const schema = yup.object().shape({
 
 export const SignUpForm = ({onSubmitCallback}) => {
 
-    
+    const classes = useStyles();
+
     const { 
-        register, 
         handleSubmit, 
-        formState: { errors } 
+        control 
     } = useForm({resolver: yupResolver(schema)});
 
+    
     const onSubmit = (data) => {
         const {email, password, firstName, lastName, rePassword} = data;
         onSubmitCallback({email, password, firstName, lastName, rePassword});
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="row">
+        <Container component="main" maxWidth="xs">
+            <CssBaseline />
+            <div className={classes.paper} onSubmit={handleSubmit(onSubmit)}>
+                <Avatar className={classes.avatar}>
+                    <LockOutlinedIcon />
+                </Avatar>
+                <Typography component="h1" variant="h5">Registrarse</Typography>
+                <form className={classes.form}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="firstName"
+                                control={control}
+                                defaultValue=""
+                                render={({ field: { onChange, value }, fieldState: { error } }) => (
+                                <TextField
+                                    label="Nombre"
+                                    variant="filled"
+                                    fullWidth
+                                    value={value}
+                                    onChange={onChange}
+                                    error={!!error}
+                                    helperText={error ? error.message : null}
+                                />
+                                )}
+                                rules={{ required: 'El nombre es requerido.' }}
+                            />
+                        </Grid>
 
-                <div className="input-group col-lg-6 mb-4">
-                    <div className="input-group-prepend">
-                        <span className="input-group-text bg-white px-4 border-md border-right-0">
-                            <i className="fa fa-user text-muted"></i>
-                        </span>
-                    </div>
-                    <input
-                        type="text" 
-                        placeholder="Nombre" 
-                        className={`form-control bg-white border-left-1 border-md ${errors?.firstName?.type === "required" && "is-invalid"}`}
-                        {...register("firstName", { required: true})}
-                        />
-                </div>
-                
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="lastName"
+                                control={control}
+                                defaultValue=""
+                                render={({ field: { onChange, value }, fieldState: { error } }) => (
+                                <TextField
+                                    label="Apellido"
+                                    variant="filled"
+                                    fullWidth
+                                    value={value}
+                                    onChange={onChange}
+                                    error={!!error}
+                                    helperText={error ? error.message : null}
+                                />
+                                )}
+                                rules={{ required: 'El apellido es requerido.' }}
+                            />
+                        </Grid>
 
-            
-                <div className="input-group col-lg-6 mb-4">
-                    <div className="input-group-prepend">
-                        <span className="input-group-text bg-white px-4 border-md border-right-0">
-                            <i className="fa fa-user text-muted"></i>
-                        </span>
-                    </div>
-                    <input
-                        type="text" 
-                        placeholder="Apellido" 
-                        className={`form-control bg-white border-left-1 border-md ${errors?.lastName?.type === "required" && "is-invalid"}`}
-                        {...register("lastName", { required: true, minLength: 1 })}
-                    />
-                </div>
+                        <Grid item xs={12}>
+                            <Controller
+                                name="email"
+                                control={control}
+                                defaultValue=""
+                                render={({ field: { onChange, value }, fieldState: { error } }) => (
+                                <TextField
+                                    label="Email"
+                                    variant="filled"
+                                    fullWidth
+                                    value={value}
+                                    onChange={onChange}
+                                    error={!!error}
+                                    helperText={error ? error.message : null}
+                                    type="email"
+                                />
+                                )}
+                                rules={{ required: 'El email es requerido.' }}
+                            />
+                        </Grid>
 
-            
-                <div className="input-group col-lg-12 mb-4">
-                    <div className="input-group-prepend">
-                        <span className="input-group-text bg-white px-4 border-md border-right-0">
-                            <i className="fa fa-envelope text-muted"></i>
-                        </span>
-                    </div>
-                    <input
-                        type="email" 
-                        placeholder="Correo electronico" 
-                        className={`form-control bg-white border-left-1 border-md ${errors?.email?.type === "required" && "is-invalid"}`}
-                        {...register("email", { required: true})}
-                    />
-                    <div className="text-danger text-small d-block mb-2 ml-3 col-lg-12 mb-4">
-                        {errors.email?.message}
-                    </div>
-                </div>
+                        <Grid item xs={12}>
+                            <Controller
+                                name="password"
+                                control={control}
+                                defaultValue=""
+                                render={({ field: { onChange, value }, fieldState: { error } }) => (
+                                <TextField
+                                    label="Contraseña"
+                                    variant="filled"
+                                    fullWidth
+                                    value={value}
+                                    onChange={onChange}
+                                    error={!!error}
+                                    helperText={error ? error.message : null}
+                                    type="password"
+                                />
+                                )}
+                                rules={{ required: 'La contraseña es requerida.'}}
+                            />
+                        </Grid>
 
-                <div className="input-group col-lg-12 mb-4">
-                    <div className="input-group-prepend">
-                        <span className="input-group-text bg-white px-4 border-md border-right-0">
-                            <i className="fa fa-lock text-muted"/>
-                        </span>
-                    </div>
-                    <input 
-                        type="password" 
-                        placeholder="Contraseña" 
-                        className={`form-control bg-white border-left-1 border-md ${errors?.password?.type === "required" && "is-invalid"}`}
-                        {...register("password", { required: true, minLength: 8, maxLength: 30})}
-                    />
-                </div>
-                <div className="text-danger text-small d-block mb-2 ml-3 col-lg-12 mb-4">
-                    {errors.password?.message}
-                </div>
+                        <Grid item xs={12}>
+                            <Controller
+                                name="rePassword"
+                                control={control}
+                                defaultValue=""
+                                render={({ field: { onChange, value }, fieldState: { error } }) => (
+                                <TextField
+                                    label="Confirmar contraseña"
+                                    variant="filled"
+                                    fullWidth
+                                    value={value}
+                                    onChange={onChange}
+                                    error={!!error}
+                                    helperText={error ? error.message : null}
+                                    type="password"
+                                />
+                                )}
+                            />
+                        </Grid>
 
-                
-                <div className="input-group col-lg-12 mb-4">
-                    <div className="input-group-prepend">
-                        <span className="input-group-text bg-white px-4 border-md border-right-0">
-                            <i className="fa fa-lock text-muted"/>
-                        </span>
-                    </div>
-                    <input 
-                        type="password" 
-                        placeholder="Confirmar Contraseña" 
-                        className={`form-control bg-white border-left-1 border-md ${errors?.rePassword?.type === "required" && "is-invalid"}`}
-                        {...register("rePassword", { required: true})}
-                    />
-                </div>
+                    </Grid>
 
-                <div className="text-danger text-small d-block mb-2 ml-3 col-lg-12 mb-4">
-                    {errors.rePassword?.message}
-                </div>
+                    <Box pt={2}>
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            className={classes.submit}
+                        >
+                            Registrarse
+                        </Button>
+                    </Box>
 
+                    <Grid container justify="flex-end">
+                        <Grid item>
+                            <Box pt={1}>
+                                <Link to="/signin" style={{ color: '#FFF',  textDecoration: 'none' }}>
+                                    Already have an account? Sign in
+                                </Link>
+                            </Box>
+                        </Grid>
+                    </Grid>
 
-    
-                <div className="form-group col-lg-12 mx-auto mb-0">
-                    <button type="submit" className="btn btn-primary btn-block py-2">
-                        Registrar
-                    </button>
-                </div>
-    
-                <div className="text-center w-100">
-                    <p className="font-weight-bold">¿Ya tenes cuenta?<Link to={"/signin"} className="text-primary ml-2">Inicia sesion aqui</Link></p>
-                </div>
-
+                </form>
             </div>
-        </form>
+        </Container>
     );
 };

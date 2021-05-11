@@ -37,13 +37,16 @@ export const SignIn = () => {
 
             })
             .catch(error => {
+                console.log(error);
+                console.log(error.response.data.message);
                 setErrores({
                     //error.response.data.message
-                    auth: error.response.data.message
+                    auth: "Contraseña o email incorrecto."
                 });
             });
     };
 
+    
     return (
         <Container className="mt-5">
             <Row>

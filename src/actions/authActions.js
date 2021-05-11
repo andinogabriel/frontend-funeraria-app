@@ -37,7 +37,8 @@ export const startLoginUser = (userData) =>  {
                         lastName,
                         firstName
                     },
-                    loggedIn: true
+                    loggedIn: true,
+                    fetched: true
                 }));
             } catch (error) {
                 console.log(error);
@@ -45,16 +46,17 @@ export const startLoginUser = (userData) =>  {
             
         } catch (error) {
             console.log(error);
+            console.log(error.response.data.message);
         }
     };
     
                      
 };
 
-export const setCurrentUser = ({user, loggedIn}) => ({
+export const setCurrentUser = ({user, loggedIn, fetched}) => ({
     //Hay que pasarle el tipo y el payload para que en el reducer se puedan tomar decisiones y cambiar el estado en el reducer
     type: types.setCurrentUser,
-    payload: {user, loggedIn}
+    payload: {user, loggedIn, fetched: true}
 });
 
 export const logoutUser = () => dispatch => {

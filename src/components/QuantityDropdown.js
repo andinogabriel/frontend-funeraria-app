@@ -1,15 +1,42 @@
 import React from 'react'
-import { DropdownButton, Dropdown } from 'react-bootstrap';
+import { makeStyles } from '@material-ui/core/styles';
+import { FormControl, Select, MenuItem, FormHelperText } from '@material-ui/core';
+
+const useStyles = makeStyles((theme) => ({
+    formControl: {
+      margin: theme.spacing(1),
+      minWidth: 120,
+    },
+    selectEmpty: {
+      marginTop: theme.spacing(2),
+    },
+}));
 
 
-export const QuantityDropdown = ({setSuppliersPerPage, things}) => {
+export const QuantityDropdown = ({setThingsPerPage, thingsPerPage, things, quantityArray}) => {
+    const classes = useStyles();
 
+    const handleChange = (event) => {
+        setThingsPerPage(event.target.value);
+    };
 
     return (
-        <DropdownButton id="dropdown-basic-button" title={`Cantidad de ${things}`} variant="outline-info" size="sm">
-            <Dropdown.Item eventKey="5" onSelect={() => setSuppliersPerPage(5)}>5</Dropdown.Item>
-            <Dropdown.Item eventKey="10" onSelect={() => setSuppliersPerPage(10)}>10</Dropdown.Item>
-            <Dropdown.Item eventKey="15" onSelect={() => setSuppliersPerPage(15)}>15</Dropdown.Item>
-        </DropdownButton>
+        <FormControl className={classes.formControl}>
+            <Select
+                labelId="demo-simple-select-placeholder-label-label"
+                id="demo-simple-select-placeholder-label"
+                value={thingsPerPage}
+                onChange={handleChange}
+                className={classes.selectEmpty}
+            >
+                {
+                    quantityArray.map((quantity, i) => (
+                        <MenuItem key={i} value={quantity}>{quantity}</MenuItem>
+                    ))
+                }
+            </Select>
+            <FormHelperText>{`Cantidad ${things} a mostrar`}</FormHelperText>
+        </FormControl>
+
     );
 };

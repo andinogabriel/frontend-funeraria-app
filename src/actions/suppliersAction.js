@@ -14,6 +14,7 @@ export const getSuppliers = (currentPage = 1, suppliersPerPage = 5, sortDir ='as
             } else {
                 resp = await axios.get(`${SUPPLIERS_ENDPOINT}/paginated?page=${currentPage}&limit=${suppliersPerPage}&sortBy=name&sortDir=${sortDir}`);
             }
+            
             dispatch({
                 type: types.setSuppliers,
                 payload: {
