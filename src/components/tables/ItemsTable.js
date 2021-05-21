@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Box, Paper, Toolbar, Typography, makeStyles, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Fab, Autocomplete, TextField } from '@material-ui/core';
+import { Box, Paper, Toolbar, Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Fab, Autocomplete, TextField } from '@material-ui/core';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import AddIcon from '@material-ui/icons/Add';
@@ -13,31 +13,14 @@ import { ItemInfo } from '../../pages/ItemInfo';
 import { types } from './../../types/types';
 
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        width: '100%',
-        paddingLeft: theme.spacing(1),
-        paddingRight: theme.spacing(1),
-    },
-    container: {
-      maxHeight: 450,
-    },
-    title: {
-        flex: '1 1 100%',
-    },
-}));
-
-
 export const ItemsTable = ({items, searchName, setSearchName, sortToggle, sortItems, totalPages, currentPage, setCurrentPage, setItemsPerPage, itemsPerPage, sortBy, categories, setCategoryId}) => {
-
-    const classes = useStyles();
     
     return (
         
         <Box m={2} pt={3}>
-            <Paper className={classes.root}>
-                <Toolbar className={classes.root}>
-                    <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+            <Paper className="table-root">
+                <Toolbar className="table-root">
+                    <Typography className="table-title" variant="h6" id="tableTitle" component="div">
                                 Articulos
                     </Typography>
                     <Autocomplete
@@ -59,7 +42,7 @@ export const ItemsTable = ({items, searchName, setSearchName, sortToggle, sortIt
                         />
                     </div>
                 </Toolbar>
-                <TableContainer className={classes.container}>
+                <TableContainer className="table-container">
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>
                             <TableRow>

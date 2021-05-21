@@ -6,7 +6,6 @@ import { BrandsTable } from './../components/tables/BrandsTable';
 
 export const Brands = () => {
 
-    
     const [brandsPerPage, setBrandsPerPage] = useState(5);
     const [currentPage, setCurrentPage] = useState(1);
     const [sortToggle, setSortToggle] = useState(true);
@@ -53,5 +52,5 @@ export const Brands = () => {
                     />
             }
         </>
-    )
-}
+    );
+};

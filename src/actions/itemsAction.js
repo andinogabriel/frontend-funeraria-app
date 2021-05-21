@@ -17,9 +17,7 @@ export const getItems = (categoryId, currentPage = 1, itemsPerPage = 5, sortBy =
             } else {
                 resp = await axios.get(`${ITEMS_ENDPOINT}/paginated?page=${currentPage}&limit=${itemsPerPage}&sortBy=${sortBy}&sortDir=${sortDir}`);
             }
-            console.log("Resp: ", resp);
-            console.log("Sort by: ", sortBy);
-
+            
             dispatch({
                 type: types.itemsGet,
                 payload: {

@@ -62,4 +62,44 @@ body {
 }
 
 
+.table-root {
+    width: '100%';
+    padding-left: 8px;
+    padding-right: 8px
+}
+
+.table-container {
+    max-height: 450px;
+}
+
+.table-title {
+    flex: 1 1 100%;
+}
+
+.card-root {
+    min-width: 275;
+}
+
+.bullet {
+    display: 'inline-block';
+    margin: '0 2px';
+    transform: 'scale(0.8)';
+}
+  
+.card-title {
+    font-size: 14;
+}
+
+.pos {
+    margin-bottom: 12;
+}
+
+.info-root {
+    width: '100%';
+    max-width: 360;
+    background-color: #fff;
+
+    ;
+}
+
 

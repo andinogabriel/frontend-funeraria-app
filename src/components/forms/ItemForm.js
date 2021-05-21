@@ -36,7 +36,7 @@ export const ItemForm = ({id, item}) => {
 
     const watchCategoryObject = watch('categoryObject');
     
-
+    
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -66,8 +66,7 @@ export const ItemForm = ({id, item}) => {
         fetchData();
     }, [id, item, setValue]);
 
-    console.log(item?.itemImageLink);
-
+   
     const handleFileChange = (e) => {
         setValue('image', e.target.files[0]);
     };

@@ -1,20 +1,11 @@
 import React, { useState } from 'react';
 import InfoIcon from '@material-ui/icons/Info';
 import { Dialog, DialogTitle, DialogContent, DialogContentText, List, ListItem, Box } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-      width: '100%',
-      maxWidth: 360,
-      backgroundColor: theme.palette.background.paper,
-    },
-}));
 
 export const SupplierInfo = ({supplier}) => {
     
-    const classes = useStyles();
+    
     const [open, setOpen] = useState(false);
 
     const {name, nif, webPage, email, mobileNumbers, addresses} = supplier;
@@ -49,7 +40,11 @@ export const SupplierInfo = ({supplier}) => {
                         component="div"
                         style={{color:"black"}}
                     >
-                        <List component="nav" className={classes.root} aria-label="mailbox folders">
+                        <List 
+                            component="nav" 
+                            className="info-root"
+                            aria-label="mailbox folders"
+                        >
                             {
                                 supplierInfo.map((s, i) => (
                                     <ListItem button divider key={i}>

@@ -1,25 +1,11 @@
 import React, { useState } from 'react';
 import InfoIcon from '@material-ui/icons/Info';
 import { Dialog, DialogContent, DialogContentText, DialogTitle, List, ListItem } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-      width: '100%',
-      maxWidth: 360,
-      backgroundColor: theme.palette.background.paper,
-    },
-    img: {
-        borderRadius: '10px',
-        width: '100%',
-        height: 'auto'
-    },
-}));
 
 export const ItemInfo = ({item}) => {
 
-    const classes = useStyles();
+    
     const [open, setOpen] = useState(false);
     const {name, description, code, itemImageLink, price, itemLength, itemHeight, itemWidth, stock, category, brand} = item;
     
@@ -65,7 +51,7 @@ export const ItemInfo = ({item}) => {
                         component="div"
                         style={{color:"black"}}
                     >
-                        <List component="nav" className={classes.root} aria-label="mailbox folders">
+                        <List component="nav" className="info-root" aria-label="mailbox folders">
                             {
                                 itemInfo.map((item, index) => (
                                     index <= 7

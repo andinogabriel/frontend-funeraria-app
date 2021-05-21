@@ -6,31 +6,12 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { toast } from 'react-toastify';
-import { Alert, Grid, TextField, Button, makeStyles, Card, CardContent, Paper, Box } from '@material-ui/core';
+import { Alert, Grid, TextField, Button, Card, CardContent, Paper, Box } from '@material-ui/core';
 import ListIcon from '@material-ui/icons/List';
 import { getSuppliers } from './../../actions/suppliersAction';
 import { AddMobileNumbers } from './AddMobileNumbers';
 import { AddAddressForm } from './AddAddressForm';
 import { SUPPLIERS_ENDPOINT, MOBILE_NUMBERS_ENDPOINT, ADDRESSES_ENDPOINT } from '../../helpers/endpoints';
-
-
-const useStyles = makeStyles({
-    root: {
-      minWidth: 275,
-    },
-    bullet: {
-      display: 'inline-block',
-      margin: '0 2px',
-      transform: 'scale(0.8)',
-    },
-    title: {
-      fontSize: 14,
-    },
-    pos: {
-      marginBottom: 12,
-    },
-});
-
 
 //Validaciones de los campos del formulario
 const schema = yup.object().shape({
@@ -40,8 +21,6 @@ const schema = yup.object().shape({
 });
 
 export const AddSupplierForm = () => {
-
-    const classes = useStyles();
 
     const {id} = useParams();
     const dispatch = useDispatch();
@@ -170,7 +149,7 @@ export const AddSupplierForm = () => {
     return (
         <Box mt={5}>
             <Paper elevation={7}>
-                <Card className={classes.root} variant="outlined" >
+                <Card className="card-root" variant="outlined" >
                     <CardContent>
                         {
                             id 

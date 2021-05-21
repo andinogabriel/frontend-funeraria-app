@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { makeStyles, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Typography, Toolbar, Fab } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Typography, Toolbar, Fab } from '@material-ui/core';
 import SystemUpdateAltIcon from '@material-ui/icons/SystemUpdateAlt';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
@@ -12,19 +12,6 @@ import { SupplierInfo } from './../../pages/SupplierInfo';
 import { DeleteButton } from '../buttons/DeleteButton';
 import { types } from './../../types/types';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        width: '100%',
-        paddingLeft: theme.spacing(1),
-        paddingRight: theme.spacing(1),
-    },
-    container: {
-      maxHeight: 450,
-    },
-    title: {
-        flex: '1 1 100%',
-    },
-}));
 
 const columns = [
     { id: 'nif', label: 'NIF', minWidth: 100},
@@ -35,14 +22,13 @@ const columns = [
 
 export const SuppliersTable = ({suppliers, currentPage, totalPages, setCurrentPage, suppliersPerPage, setSuppliersPerPage, searchName, setSearchName,  sortSuppliers, sortToggle}) => {
 
-    const classes = useStyles();
 
     return (
         
         <Box m={2} pt={3}>
-            <Paper className={classes.root}>
-                <Toolbar className={classes.root}>
-                    <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+            <Paper className="table-root">
+                <Toolbar className="table-root">
+                    <Typography className="table-title" variant="h6" id="tableTitle" component="div">
                             Proveedores
                     </Typography>
                     <div style={{"float":"right"}}>
@@ -53,7 +39,7 @@ export const SuppliersTable = ({suppliers, currentPage, totalPages, setCurrentPa
                         />
                     </div>
                 </Toolbar>
-                <TableContainer className={classes.container}>
+                <TableContainer className="table-container">
                     <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                         <TableRow>

@@ -6,7 +6,6 @@ import {confirmAlert} from 'react-confirm-alert';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 
-
 export const DeleteButton = ({id, name, currentPage, thingToDelete, deleteEndPoint, getEndPoint, thingsPerPage, deleteType, setCurrentPage}) => {
     
     const dispatch = useDispatch();

@@ -18,6 +18,7 @@ import { AddOrUpdateItem } from './../pages/AddOrUpdateItem';
 import { Items } from './../pages/Items';
 import { AddOrUpdateBrand } from './../pages/AddOrUpdateBrand';
 import { Brands } from './../pages/Brands';
+import { AddOrUpdateEntry } from './../pages/AddOrUpdateEntry';
 
 
 export const AppRouter = () => {
@@ -115,6 +116,11 @@ export const AppRouter = () => {
                     <Route
                         exact path="/editar-marca/:id"
                         component={ AddOrUpdateBrand}
+                    />
+
+                    <Route
+                        exact path="/agregar-ingreso"
+                        component={ AddOrUpdateEntry}
                     />
                    
                     <Redirect to="/" /> 
