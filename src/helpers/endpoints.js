@@ -14,5 +14,7 @@ export const ADDRESSES_ENDPOINT = API_URL + "/addresses";
 export const CATEGORIES_ENDPOINT = API_URL + "/categories";
 export const BRANDS_ENDPOINT = API_URL + "/brands";
 export const ITEMS_ENDPOINT = API_URL + "/items";
+export const ENTRIES_ENDPOINT = API_URL + "/entries";
+export const ENTRY_DETAILS_ENDPOINT = API_URL + "/entryDetails";
 export const RECEIPT_TYPES_ENDPOINT = API_URL + "/receiptTypes";
 

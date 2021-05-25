@@ -12,13 +12,13 @@ import { ITEMS_ENDPOINT } from '../helpers/endpoints';
 const validationSchema = yup.object().shape({
     categoryObject: yup.object().required(),
     itemObject: yup.object().required(),
-    quantity: yup.number().positive().required(),
-    purchasePrice: yup.number().required().typeError('').test(
+    quantity: yup.number().positive('La cantidad debe ser positiva').typeError('').required(),
+    purchasePrice: yup.number().positive('El precio de compra debe ser positivo.').typeError('').required().typeError('').test(
         "maxDigitsAfterDecimal",
         "Precio de compra solo debe tener 2 decimales o menos.",
         (number) => /^\d+(\.\d{1,2})?$/.test(number)
     ),
-    salePrice: yup.number().required().typeError('').test(
+    salePrice: yup.number().positive('El precio de venta debe ser positivo.').typeError('').required().typeError('').test(
         "maxDigitsAfterDecimal",
         "Precio de venta solo debe tener 2 decimales o menos.",
         (number) => /^\d+(\.\d{1,2})?$/.test(number)
@@ -27,9 +27,7 @@ const validationSchema = yup.object().shape({
 
 export const AddEntryDetail = ({categories, setEntryDetails, entryDetail, position, entryDetails}) => {
 
-    console.log(position);
-
-
+    
     const [open, setOpen] = useState(false);
     const [fetched, setFetched] = useState(false);
     const [items, setItems] = useState([]);
@@ -68,16 +66,6 @@ export const AddEntryDetail = ({categories, setEntryDetails, entryDetail, positi
     
     const handleClose = () => {
         setOpen(false); 
-    };
-
-    const onSubmit = handleSubmit((data) => { 
-        if(position !== null) {
-            const clone = [...entryDetails];
-            clone[position] = data;
-            setEntryDetails(clone);
-        } else {
-            setEntryDetails(i => [...i, data]);
-        }
         reset({
             categoryObject: null, 
             itemObject: null,
@@ -85,7 +73,21 @@ export const AddEntryDetail = ({categories, setEntryDetails, entryDetail, positi
             purchasePrice: '',
             salePrice: ''
         });
-        setOpen(false);
+    };
+
+
+
+    const onSubmit = handleSubmit(data => { 
+
+        if(position !== null) {
+            const clone = [...entryDetails];
+            clone[position] = data;
+            setEntryDetails(clone);
+        } else {
+            setEntryDetails(i => [...i, data]);
+        }
+        handleClose(); 
+        
     });
 
     return (
@@ -112,6 +114,7 @@ export const AddEntryDetail = ({categories, setEntryDetails, entryDetail, positi
                 <DialogContent>
                     <form onSubmit={onSubmit}>
                         <Grid container spacing={2}>
+
                             <Grid item xs={12} sm={6}>
                             {
                                 categories.length > 0
@@ -197,6 +200,7 @@ export const AddEntryDetail = ({categories, setEntryDetails, entryDetail, positi
                                         value={value}
                                         onChange={onChange}
                                         error={!!error}
+                                        helperText={error ? error.message : null}
                                     />
                                     )}
                                 />
@@ -249,8 +253,7 @@ export const AddEntryDetail = ({categories, setEntryDetails, entryDetail, positi
                                     <Button onClick={handleClose} color="primary">
                                         Cancelar
                                     </Button>
-
-                                    <Button onClick={isValid ? handleClose : undefined} color="primary" type="submit">
+                                    <Button type="submit" onClick={isValid ? handleClose() : undefined} color="primary">
                                         {
                                             position !== null 
                                                 ?
@@ -260,6 +263,7 @@ export const AddEntryDetail = ({categories, setEntryDetails, entryDetail, positi
                                         }
                                         
                                     </Button>
+
                                 </Box>
                             </DialogActions>
                         </Grid>
