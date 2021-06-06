@@ -8,6 +8,7 @@ import { Grid, Autocomplete, TextField, Box, Button, Skeleton, List, ListItem, P
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import { CATEGORIES_ENDPOINT, RECEIPT_TYPES_ENDPOINT, SUPPLIERS_ENDPOINT, ENTRIES_ENDPOINT, ENTRY_DETAILS_ENDPOINT } from './../../helpers/endpoints';
 import { AddEntryDetail } from '../AddEntryDetail';
+import { DialogForm } from '../DialogForm';
 
 
 
@@ -48,6 +49,8 @@ export const EntryForm = () => {
     const [entryDetails, setEntryDetails] = useState([]);
     const [entryDetail, setEntryDetail] = useState(null);
     const [error, setError] = useState(null);
+    const [open, setOpen] = useState(false);
+    
 
 
     const { handleSubmit, control, watch, isValid } = useForm({defaultValues: { receiptTypeObject: null, entrySupplierObject:null, receiptNumber: '', receiptSeries: '', tax: ''}, resolver: yupResolver(validationSchema)});
@@ -337,14 +340,19 @@ export const EntryForm = () => {
                                                             {t.purchasePrice}
                                                         </TableCell>
                                                         <TableCell>
-                                                            <AddEntryDetail 
-                                                                categories={categories} 
-                                                                setEntryDetails={setEntryDetails} 
-                                                                entryDetail={t} 
-                                                                position={i} 
-                                                                entryDetails={entryDetails}
+                                                            <DialogForm
+                                                                open={open}
+                                                                setOpen={setOpen}
+                                                                thing="Articulo"
+                                                                position={i}
+                                                                FormComponent={<AddEntryDetail 
+                                                                    categories={categories} 
+                                                                    setEntryDetails={setEntryDetails} 
+                                                                    entryDetail={t} 
+                                                                    position={i} 
+                                                                    entryDetails={entryDetails}
+                                                                />}
                                                             />
-
                                                             <RemoveCircleIcon       style={{color:"#ff3333"}}
                                                             onClick={() => handleDeleteEntryDetail(i)}
                                                             />

@@ -22,14 +22,15 @@ export const tokenCheck = async () => {
                }
             });
             
-            const { lastName, firstName } = getUser.data;
-            //console.log(lastName, firstName);
+            const { lastName, firstName, roles } = getUser.data;
+            const userRoles = roles.map(({name}) => name);
             //Seteamos en nuestro store de User
             store.dispatch(setCurrentUser({
                 user: {
                     ...decoded,
                     lastName,
-                    firstName
+                    firstName,
+                    userRoles
                 },
                 loggedIn: true
             }));

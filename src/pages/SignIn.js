@@ -4,16 +4,14 @@ import { useHistory } from 'react-router-dom';
 import { Container, Row, Col} from 'react-bootstrap';
 import { startLoginUser } from './../actions/authActions';
 import { SignInForm } from './../components/forms/SignInForm';
+import { Typography, Alert, Grid } from '@material-ui/core';
 
 
 export const SignIn = () => {
 
-    const [errores, setErrores] = useState({});
-    
+    const [errores, setErrores] = useState(null);
     const dispatch = useDispatch();
-
     const {loggedIn} = useSelector(state => state.auth);
-
     const history = useHistory();
 
     useEffect(() => {
@@ -23,27 +21,13 @@ export const SignIn = () => {
         }
     }, [loggedIn, history]);
 
-    
 
-
-    const login =  ({email, password}) => {
-        const errores = {};
-        //Cada vez que se lanze el formulario va a vaciar los errores para volver a recalcular a ver si tiene
-        setErrores(errores);
-
-        //Llamar nuestra accion lamar login
-        dispatch(startLoginUser({email, password}))
-            .then(response => {
-
-            })
-            .catch(error => {
-                console.log(error);
-                console.log(error.response.data.message);
-                setErrores({
-                    //error.response.data.message
-                    auth: "Contraseña o email incorrecto."
-                });
-            });
+    const login = ({email, password}) => {
+        try {
+            dispatch(startLoginUser({email, password}, setErrores));
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     

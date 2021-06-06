@@ -6,7 +6,7 @@ import { LOGIN_ENDPOINT, USERS_ENDPOINT } from './../helpers/endpoints';
 
 
 //Dispatch en caso de llamar a otra accion
-export const startLoginUser = (userData) =>  {
+export const startLoginUser = (userData, setErrores) =>  {
     
     return async (dispatch) => {
         try {
@@ -17,36 +17,38 @@ export const startLoginUser = (userData) =>  {
                 }
             });
             
-            const {authorization} = resp.headers;
-            
+            const {authorization, authorities} = resp.data;
 
-            //Creamos una key en localStorage llamada jwtToken y le damos el value authotization que es el token que viene del header del backend
+            //Si es un usuario valido el endpoint de login devuelve el token
+            
+            //Creamos una key en localStorage llamada jwtToken y le damos el value authorization que es el token que viene del login del backend
             localStorage.setItem('jwtToken', authorization);
 
-            const decoded = jwt_decode(authorization); //Decodificamos lo que esta en authorization
+            const decoded = jwt_decode(authorization); //Decodificamos lo que esta en token
 
             //Crear funcion para añadir token a axios, para que en cada peticion se envie el token automaticamente para no estar poniendole en los headers
             setAuthToken(authorization);
 
-            try {
-                const response  = await axios.get(USERS_ENDPOINT);
-                const {firstName, lastName} = response.data;
-                dispatch(setCurrentUser({
-                    user: {
-                        ...decoded,
-                        lastName,
-                        firstName
-                    },
-                    loggedIn: true,
-                    fetched: true
-                }));
-            } catch (error) {
-                console.log(error);
-            }
+            //Transformamos el array de objectos autoridad a un array que solo contiene los valores de la autoridad
+            let userRoles = authorities.map(({authority}) => authority);
+            
+            const response  = await axios.get(USERS_ENDPOINT);
+            const {firstName, lastName} = response.data;
+            dispatch(setCurrentUser({
+                user: {
+                    ...decoded,
+                    lastName,
+                    firstName,
+                    userRoles
+                },
+                loggedIn: true,
+                fetched: true
+            }));
+          
             
         } catch (error) {
             console.log(error);
-            console.log(error.response.data.message);
+            setErrores(error?.response?.data?.message)
         }
     };
     
@@ -56,7 +58,7 @@ export const startLoginUser = (userData) =>  {
 export const setCurrentUser = ({user, loggedIn, fetched}) => ({
     //Hay que pasarle el tipo y el payload para que en el reducer se puedan tomar decisiones y cambiar el estado en el reducer
     type: types.setCurrentUser,
-    payload: {user, loggedIn, fetched: true}
+    payload: {user, loggedIn, fetched}
 });
 
 export const logoutUser = () => dispatch => {

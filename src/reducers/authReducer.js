@@ -3,7 +3,7 @@ import { types } from '../types/types';
 const initialState = {
     loggedIn: false,
     user: {},
-    fetched: false
+    fetched: false,
 };
 
 export const authReducer = (state = initialState, action) => {

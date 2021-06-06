@@ -10,8 +10,8 @@ import { PublicRoute } from './PublicRoute';
 import { PrivateRoute } from './PrivateRoute';
 import { Affiliates } from './../pages/Affiliates';
 import { Suppliers } from './../pages/Suppliers';
+import { AddOrUpdateSupplier } from '../pages/AddOrUpdateSupplier';
 import { AffiliateForm } from './../components/forms/AffiliateForm';
-import { AddSupplierForm } from './../components/forms/AddSupplierForm';
 import { Footer } from '../layouts/Footer';
 import { AddAddressForm } from './../components/forms/AddAddressForm';
 import { AddOrUpdateItem } from './../pages/AddOrUpdateItem';
@@ -19,12 +19,15 @@ import { Items } from './../pages/Items';
 import { AddOrUpdateBrand } from './../pages/AddOrUpdateBrand';
 import { Brands } from './../pages/Brands';
 import { AddOrUpdateEntry } from './../pages/AddOrUpdateEntry';
+import { ROLE_ADMIN } from './../helpers/constants';
+
 
 
 export const AppRouter = () => {
 
-    const {loggedIn} = useSelector(state => state.auth);
-    console.log(loggedIn);
+    const {loggedIn, user, fetched} = useSelector(state => state.auth);
+    const { userRoles } = user;
+
     return (
         <Router>
              <div>
@@ -65,20 +68,19 @@ export const AppRouter = () => {
                     <PrivateRoute
                         exact path="/proveedores"
                         component={ Suppliers}
-                        isAuthenticated={ loggedIn }
+                        isAuthenticated={ userRoles?.includes(ROLE_ADMIN) }
                     />
-                    
                     
 
                     <PrivateRoute
                         exact path="/proveedor-formulario"
-                        component={ AddSupplierForm}
+                        component={ AddOrUpdateSupplier }
                         isAuthenticated={ loggedIn }
                     />
 
                     <PrivateRoute
                         exact path="/editar-proveedor/:id"
-                        component={ AddSupplierForm}
+                        component={ AddOrUpdateSupplier}
                         isAuthenticated={ loggedIn }
                     />
 

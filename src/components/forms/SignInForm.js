@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useForm, Controller  } from 'react-hook-form';
-import { Avatar, Button, TextField, CssBaseline, Grid, Typography, Container, Box } from '@material-ui/core';
+import { Avatar, Button, TextField, CssBaseline, Grid, Typography, Container, Box, Alert } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -40,6 +40,7 @@ export const SignInForm = ({errores, onSubmitCallback}) => {
         onSubmitCallback({email, password});
     };
 
+    console.log(errores);
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
@@ -48,6 +49,16 @@ export const SignInForm = ({errores, onSubmitCallback}) => {
                     <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">Iniciar sesión</Typography>
+                {
+                    errores &&
+                    <Grid item xs={12} sm={12}>
+
+                        <Alert severity="error" variant="outlined">
+                            <Typography align="center" color="error">{errores}</Typography>
+                        </Alert>
+                    </Grid>
+                }
+                
                 <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
                     <Controller
                         name="email"

@@ -11,6 +11,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import { logoutUser } from './../actions/authActions';
+import { ROLE_ADMIN } from './../helpers/constants';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -27,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
 export const Navigation = () => {
 
     const {loggedIn, user} = useSelector(state => state.auth);
+    const { userRoles } = user;
     const dispatch = useDispatch();
     const classes = useStyles();
     const [auth, setAuth] = React.useState(true);
@@ -99,7 +101,10 @@ export const Navigation = () => {
                                 :
                                 <div>
                                     <MenuItem onClick={handleClose} component={Link} to="/mis-afiliados">Mis afiliados</MenuItem>
-                                    <MenuItem onClick={handleClose} component={Link} to="/proveedores">Proveedores</MenuItem>
+                                    {
+                                        userRoles?.includes(ROLE_ADMIN) &&
+                                            <MenuItem onClick={handleClose} component={Link} to="/proveedores">Proveedores</MenuItem>
+                                    }
                                     <MenuItem onClick={logout}>Cerrar sesión</MenuItem>
                                 </div>
                         }
