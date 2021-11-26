@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { registerUser } from '../actions/authActions';
 import { startLoginUser } from './../actions/authActions';
-import { Alert } from 'react-bootstrap';
+import { Alert } from '@mui/material';
 import { SignUpForm } from './../components/forms/SignUpForm';
 
 
@@ -42,7 +42,10 @@ export const SignUp = () => {
                     <h1>Crear cuenta</h1>
                     <p className="font-italic  mb-0">Create una cuenta para poder solicitar el servicio.</p>
                     {
-                        errores.registerError && (<Alert variant="danger">{errores.registerError}</Alert>)
+                        errores?.registerError && 
+                            <Alert variant="outlined" severity="error">
+                                {errores.registerError}
+                            </Alert>
                     }
                 </div>
 

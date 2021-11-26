@@ -2,7 +2,6 @@ import { types } from './../types/types';
 
 const initialState = {
     suppliers: [],
-    totalPages: '',
     fetched: false,
 };
 
@@ -16,7 +15,6 @@ export const suppliersReducer = (state = initialState, action) => {
                 ...state,
                 fetched: payload.fetched,
                 suppliers: payload.suppliers,
-                totalPages: payload.totalPages
             };
         case types.suppliersAdNew:
             return {

@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, NavLink } from 'react-router-dom';
-import { Box, Card, CardContent, Paper, Button } from '@material-ui/core';
+import { Box, Card, CardContent, Paper, Button } from '@mui/material';
 import { BrandForm } from '../components/forms/BrandForm';
 import { BRANDS_ENDPOINT } from '../helpers/endpoints';
-import ListIcon from '@material-ui/icons/List';
+import ListIcon from '@mui/icons-material/List';
 
 
 export const AddOrUpdateBrand = () => {
 
     const {id} = useParams();
     const [brandToUpdate, setBrandToUpdate] = useState(null);
+    const [fetching, setFetching] = useState(true);
 
     useEffect(() => {
         if(id) {
@@ -19,13 +20,17 @@ export const AddOrUpdateBrand = () => {
                 const resp = await axios.get(`${BRANDS_ENDPOINT}/${id}`);
                 if(resp.data !== null) {
                     setBrandToUpdate(resp.data);
+                    setFetching(false);
                 }
               } catch (error) {
                 console.log(error);
               }
             };
             fetchData();
+        } else {
+            setFetching(false);
         }
+
     }, [id]);
 
     return (
@@ -44,11 +49,11 @@ export const AddOrUpdateBrand = () => {
                         </h2>
                         <hr/>
                         <BrandForm
-                            id={id}
                             brand={brandToUpdate}
+                            fetching={fetching}
                         />
                     </CardContent>
-                    <Button size="sm" variant="contained" component={NavLink} to={'/marcas'}>
+                    <Button size="small" variant="contained" component={NavLink} to={'/marcas'}>
                         <ListIcon/> Volver a marcas
                     </Button>
                 </Card>

@@ -4,6 +4,9 @@ import { userAffiliatesReducer } from './userAffiliatesReducer';
 import { suppliersReducer } from './suppliersReducer';
 import { itemsReducer } from './itemsReducer';
 import { brandsReducer } from './brandsReducer';
+import { categoriesReducer } from './categoriesReducer';
+import { entriesReducer } from './entriesReducer';
+import { receiptTypesReducer } from './receiptTypeReducer';
 
 
 export default combineReducers({
@@ -11,5 +14,8 @@ export default combineReducers({
     affiliates: userAffiliatesReducer,
     suppliers: suppliersReducer,
     items: itemsReducer,
-    brands: brandsReducer
+    brands: brandsReducer,
+    categories: categoriesReducer,
+    entries: entriesReducer,
+    receiptTypes: receiptTypesReducer
 }); 

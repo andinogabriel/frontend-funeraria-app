@@ -3,17 +3,17 @@ import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import {confirmAlert} from 'react-confirm-alert';
-import DeleteIcon from '@material-ui/icons/Delete';
+import { HighlightOff, Delete } from '@mui/icons-material';
 
 
-export const DeleteButton = ({id, name, currentPage, thingToDelete, deleteEndPoint, getEndPoint, thingsPerPage, deleteType, setCurrentPage}) => {
+export const DeleteButton = ({id, name, thingToDelete, endpoint, deleteType, setList, index, iconType}) => {
     
     const dispatch = useDispatch();
 
     const createAlert = () => {
         confirmAlert({
             title: `Eliminar ${thingToDelete}`,
-            message: `¿Estas seguro que deseas eliminar a ${name}?`,
+            message: `¿Estas seguro que deseas eliminar ${name}?`,
             buttons: [
                 {
                     label: 'Si',
@@ -29,15 +29,23 @@ export const DeleteButton = ({id, name, currentPage, thingToDelete, deleteEndPoi
 
     const deleteThing = async () => {
         try {
-            await axios.delete(`${deleteEndPoint}/${id}`);
-
-            dispatch({
-                type: deleteType,
-                payload: {
-                    id: id
+            if(typeof(id) === 'number') {
+                await axios.delete(`${endpoint}/${id}`);
+    
+                if(deleteType !== null) {
+                    dispatch({
+                        type: deleteType,
+                        payload: {
+                            id: id
+                        }
+                    });
+                } else {
+                    setList((prev) => prev.filter((thing) => thing.id !== id));
                 }
-            });
-            
+            } else {
+                setList((prev) => prev.filter((thing) => thing !== prev[index]));
+            }
+    
             toast.info(`${name} se ha eliminado satisfactoriamente.`, {
                 position: "top-center",
                 autoClose: 2500,
@@ -47,18 +55,12 @@ export const DeleteButton = ({id, name, currentPage, thingToDelete, deleteEndPoi
                 draggable: true,
                 progress: undefined,
             });
-            
-            const resp = await axios.get(`${getEndPoint}?page=${currentPage}&limit=${thingsPerPage}`);
-            
-            if(resp.data.content?.length < 1) {
-                setCurrentPage(currentPage-1);
-            }
- 
+             
         } catch (error) {
             console.log(error);
-            toast.error(error.response.data.message, {
+            toast.error(error?.response?.data?.message, {
                 position: "top-center",
-                autoClose: 2500,
+                autoClose: 5000,
                 hideProgressBar: true,
                 closeOnClick: true,
                 pauseOnHover: true,
@@ -69,9 +71,20 @@ export const DeleteButton = ({id, name, currentPage, thingToDelete, deleteEndPoi
     };
 
     return (
-        <DeleteIcon
-            onClick={createAlert}
-            color="secondary"
-        />
+        <>
+        {
+            iconType && iconType !== null
+                ?
+                <HighlightOff
+                    onClick={createAlert}
+                    style={{color:"#ff3333", cursor: 'pointer'}}
+                />
+                :
+                <Delete
+                    onClick={createAlert}
+                    style={{color:"#ff3333", cursor: 'pointer'}}
+                />
+        }
+        </>   
     );
 };

@@ -1,97 +1,67 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Box, Paper, Toolbar, Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Fab } from '@material-ui/core';
-import AddIcon  from '@material-ui/icons/Add';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
-import SystemUpdateAltIcon from '@material-ui/icons/SystemUpdateAlt';
-import { Searcher } from '../Searcher';
-import { Paginator } from '../Paginator';
-import { QuantityDropdown } from '../QuantityDropdown';
+import { DataGrid } from '@mui/x-data-grid';
+import { Edit } from '@mui/icons-material';
 import { DeleteButton } from './../buttons/DeleteButton';
 import { types } from './../../types/types';
+import { BRANDS_ENDPOINT } from '../../helpers/endpoints';
+
+const columns = [
+    { field: 'name', headerName: 'Nombre', width: 250 },
+    { field: 'webPage', headerName: 'Pagina web', width: 250 },
+    {
+      field: "action",
+      headerName: "Acciones",
+      disableColumnMenu: true,
+      sortable: false,
+      width: 100,
+      renderCell: ({row}) => {
+        return (
+          <>
+            <Link to={`/editar-marca/${row.id}`}>
+              <Edit/>
+            </Link>
+            <DeleteButton
+              id={row.id}
+              name={row.name}
+              thingToDelete="Marca"
+              endpoint={BRANDS_ENDPOINT}
+              deleteType={types.brandsDeleted}
+            />
+          </>
+        );
+      },
+    }
+  ];
 
 
-export const BrandsTable = ({brands, totalPages, setCurrentPage, currentPage, brandsPerPage, setBrandsPerPage, sortToggle, sortBrands, setSearchName, searchName}) => {
+export const BrandsTable = ({brands, fetched}) => {
+
+    const [page, setPage] = useState(0);
+    const [pageSize, setPageSize] = useState(5);
+
+    const handlePageSizeChange = (params) => {
+      setPageSize(params.pageSize);
+    };
 
     return (
-        <Box m={2} pt={3}>
-            <Paper className="table-root">
-                <Toolbar className="table-root">
-                    <Typography className="table-title" variant="h6" id="tableTitle" component="div">
-                        Marcas
-                    </Typography>
-                    <div style={{"float":"right"}}>
-                        <Searcher
-                            searchThing={searchName}
-                            setSearchName={setSearchName}
-                            thingToSearch="nombre"
-                        />
-                    </div>
-                </Toolbar>
-                <TableContainer className="table-container">
-                    <Table stickyHeader aria-label="sticky table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>
-                                Nombre 
-                                {
-                                    !sortToggle 
-                                        ?
-                                            <ArrowDropDownIcon onClick={() => sortBrands()}/>
-                                        :
-                                            <ArrowDropUpIcon onClick={() => sortBrands()}/>
-                                }
-                                </TableCell>
-                                <TableCell>Acciones</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {
-                                brands.map(brand => (
-                                    <TableRow key={brand.id} role="checkbox" tabIndex={-1}>
-                                        <TableCell>{brand.name}</TableCell>
-                                        <TableCell>
-                                            <Box 
-                                                display="flex"         justifyContent="space-around"
-                                            >
-                                                <Link to={`/editar-marca/${brand.id}`} style={{ textDecoration: 'none' }}>
-                                                    <SystemUpdateAltIcon color="primary"/>
-                                                </Link>
-                                                <DeleteButton
-                                                    id={brand.id}
-                                                    name={brand.name}
-                                                    currentPage={currentPage}
-                                                    thingToDelete={'marca'}
-                                                    deleteEndPoint="http://localhost:8081/api/v1/brands"
-                                                    getEndPoint="http://localhost:8081/api/v1/brands"
-                                                    thingsPerPage={brandsPerPage}
-                                                    deleteType={types.brandsDeleted}
-                                                    setCurrentPage={setCurrentPage}
-                                                />
-                                            </Box>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            }
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                <Paginator
-                    totalPages={totalPages}
-                    currentPage={currentPage}
-                    setCurrentPage={setCurrentPage}
-                />
-                <QuantityDropdown
-                    setThingsPerPage={setBrandsPerPage}
-                    things="marcas"
-                    thingsPerPage={brandsPerPage}
-                    quantityArray={[5, 10, 15]}
-                />
-            </Paper>
-            <Fab color="primary" aria-label="add" component={Link} to="agregar-marca" style={{ textDecoration: 'none'}}>
-                <AddIcon />
-            </Fab>
-        </Box>
+        <div style={{ padding: 10 }}>
+          <DataGrid 
+            rows={brands} columns={columns} 
+            page={page}
+            onPageChange={(params) => {
+                setPage(params.page);
+            }}
+            pageSize={pageSize}
+            onPageSizeChange={handlePageSizeChange}
+            rowsPerPageOptions={[5, 10, 20]}
+            pagination
+            autoHeight
+            disableSelectionOnClick
+            showCellRightBorder
+            showColumnRightBorder
+            loading={!fetched}
+          />
+      </div>
     );
 };

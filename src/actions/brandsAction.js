@@ -3,29 +3,20 @@ import { types } from './../types/types';
 import { BRANDS_ENDPOINT } from './../helpers/endpoints';
 
 
-export const getBrands = (currentPage = 1, brandsPerPage = 5, sortDir ='asc', searchName = '') => {
-
+export const getBrands = () => {
     return async (dispatch) => {
-        try {
-            let resp;
-            if(searchName.trim().length > 0) {
-                resp = await axios.get(`${BRANDS_ENDPOINT}/search?name=${searchName}&page=${currentPage}&limit=${brandsPerPage}&sortBy=name&sortDir=${sortDir}`);
-            } else {
-                resp = await axios.get(`${BRANDS_ENDPOINT}/paginated?page=${currentPage}&limit=${brandsPerPage}&sortBy=name&sortDir=${sortDir}`);
-            }
-            
+        try {       
+            const resp = await axios.get(BRANDS_ENDPOINT);
             dispatch({
                 type: types.brandsGet,
                 payload: {
                     fetched: true,
-                    brands: resp.data.content,
-                    totalPages: resp.data.totalPages,
+                    brands: resp.data
                 }
             });
         } catch (error) {
             console.log(error);
         }
-
     };
 
 };
@@ -37,13 +28,30 @@ export const addNewBrand = (brand) => {
             const {data} = resp;
             dispatch({
                 type: types.brandsAddNew,
-                payload: {data}
+                payload: data
             });
         } catch (error) {
             console.log(error);
+            console.log(error.response.data.message);
         }
     };
 };
+
+export const updateBrand = (brand) => {
+    return async (dispatch) => {
+        try {
+            const resp = await axios.put(`${BRANDS_ENDPOINT}/${brand.id}`, brand);
+            dispatch({
+                type: types.brandsAddNew,
+                payload: resp.data
+            });
+        } catch (error) {
+            console.log(error);
+            console.log(error.response.data.message);
+        }
+    };
+};
+
 
 export const deleteBrandById = (id) => {
     return async (dispatch) => {

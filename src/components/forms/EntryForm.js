@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { toast } from 'react-toastify';
-import { Grid, Autocomplete, TextField, Box, Button, Skeleton, List, ListItem, Paper, Card, CardContent, Table, TableRow, TableContainer, TableHead, TableCell, TableBody, Alert, Typography } from '@material-ui/core';
-import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
-import { CATEGORIES_ENDPOINT, RECEIPT_TYPES_ENDPOINT, SUPPLIERS_ENDPOINT, ENTRIES_ENDPOINT, ENTRY_DETAILS_ENDPOINT } from './../../helpers/endpoints';
-import { AddEntryDetail } from '../AddEntryDetail';
-import { DialogForm } from '../DialogForm';
-
+import { Grid, TextField, Box, Button, Typography, Autocomplete, Alert } from '@mui/material';
+import { ENTRIES_ENDPOINT, ENTRY_DETAILS_ENDPOINT } from './../../helpers/endpoints';
+import { EntryDetailsTable } from './../tables/EntryDetailsTable';
 
 
 const validationSchema = yup.object().shape({
@@ -28,8 +26,8 @@ const validationSchema = yup.object().shape({
         "El impuesto solo debe contener como maximo 2 decimales.",
         (number) => /^\d+(\.\d{1,2})?$/.test(number)
       ),
-    receiptTypeObject: yup.object().required(),
-    entrySupplierObject: yup.object().required()
+    receiptType: yup.object().required(),
+    entrySupplier: yup.object().required()
 });
 
 const tableHeaders = [
@@ -40,102 +38,100 @@ const tableHeaders = [
     {label: 'Acciones'},
 ];
 
-export const EntryForm = () => {
+export const EntryForm = ({entryToUpdate, fetching, receiptTypes, categories, suppliers}) => {
 
-    const [receiptTypes, setReceiptTypes] = useState([]);
-    const [suppliers, setSuppliers] = useState([]);
-    const [categories, setCategories] = useState([]);
-    const [fetched, setFetched] = useState(false);
     const [entryDetails, setEntryDetails] = useState([]);
-    const [entryDetail, setEntryDetail] = useState(null);
     const [error, setError] = useState(null);
-    const [open, setOpen] = useState(false);
+    const history = useHistory();
     
-
-
-    const { handleSubmit, control, watch, isValid } = useForm({defaultValues: { receiptTypeObject: null, entrySupplierObject:null, receiptNumber: '', receiptSeries: '', tax: ''}, resolver: yupResolver(validationSchema)});
+    const { handleSubmit, control, watch, isValid, setValue } = useForm({defaultValues: { receiptType: null, entrySupplier:null, receiptNumber: '', receiptSeries: '', tax: ''}, resolver: yupResolver(validationSchema)});
 
     const watchTax = watch('tax');
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const resp = await axios.get(RECEIPT_TYPES_ENDPOINT);
-                setReceiptTypes(resp.data);
-                const response = await axios.get(SUPPLIERS_ENDPOINT);
-                setSuppliers(response.data);
-                const respon = await axios.get(CATEGORIES_ENDPOINT);
-                setCategories(respon.data);
-                setFetched(true);
-            } catch (error) {
-                console.log(error.response.data.message);
-            }
-        };
-        fetchData();
-    }, []);
+        if(entryToUpdate) {
+            const { id, entrySupplier, receiptType, receiptNumber, receiptSeries, tax } = entryToUpdate;
+            setValue('entrySupplier', entrySupplier);
+            setValue('receiptType', receiptType);
+            setValue('receiptNumber', receiptNumber);
+            setValue('receiptSeries', receiptSeries);
+            setValue('tax', tax);
+            
+            setEntryDetails(entryToUpdate.entryDetails);
+        }
+    }, [setValue, entryToUpdate]);
 
-    const handleDeleteEntryDetail = (index) => {
-        setEntryDetails((prev) => prev.filter((entryDetail) => entryDetail !== prev[index]));
-    };
-
-    const ccyFormat = (num) => {
-        return `${num.toFixed(2)}`;
-    }
-
-    const subtotal = () => {
-        return entryDetails.map(({purchasePrice, quantity}) => purchasePrice*quantity).reduce((sum, i) => sum + i, 0);
-    };
-
-    const invoiceSubtotal = subtotal();
-    const invoiceTaxes = (watchTax * invoiceSubtotal) / 100;
-    const invoiceTotal = invoiceTaxes + invoiceSubtotal;
 
     const onSubmit = handleSubmit(async (data) => {
-        
-        if(entryDetails.length > 0) {
-            try {
-                const { entrySupplierObject, receiptTypeObject, receiptNumber, receiptSeries, tax } = data;
-    
-                const entrySupplier = entrySupplierObject.id;
-                const receiptType = receiptTypeObject.id;
-                
-                console.log(ENTRIES_ENDPOINT);
-                const resp = await axios.post(ENTRIES_ENDPOINT, {entrySupplier, receiptType, receiptNumber, receiptSeries, tax});
-    
-                if(entryDetails.length > 0) {
-                    entryDetails.map(async (entryDetail) => {
-                        const { itemObject, purchasePrice, quantity, salePrice } = entryDetail;
+        try {
+            //Actualizamos los detalles del ingreso
+            if(entryToUpdate !== null) {
+                entryDetails?.map(async (entryDetail) => {
+                    console.log(entryDetail);
+                    if(typeof(entryDetail?.id) === 'number') {
+                        let { id, item, quantity, purchasePrice, salePrice } = entryDetail;
                         
-                        const entry = resp.data.id;
-                        const item = itemObject.id;
-                        console.log(entry);
-    
-                        await axios.post(ENTRY_DETAILS_ENDPOINT, {entry, item, purchasePrice, quantity, salePrice});
-                    });
-                }
-    
-                toast.info(`Ingreso registrado satisfactoriamente.`, {
-                    position: "top-center",
-                    autoClose: 2500,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-            } catch (error) {
-                console.log(error);
-                console.log(error.response.data.message);
-                setError(error.response.data.message);
-            }
-        } else {
-            setError("Ingreso invalido. Debe tener al menos un artículo.");
-            return;
-        }
-        
-    });
+                        const entry = entryToUpdate.id;
+                        item = item.id;
+                
+                        const resp = await axios.put(`${ENTRY_DETAILS_ENDPOINT}/${id}`, { item, quantity, purchasePrice, salePrice, entry});
+                    } else {
+                        let { item, quantity, purchasePrice, salePrice } = entryDetail;
 
-    console.log(entryDetails);
+                        const entry = entryToUpdate.id;
+                        item = item.id;
+
+                        await axios.post(ENTRY_DETAILS_ENDPOINT, { item, quantity, purchasePrice, salePrice, entry});
+                    }
+                });
+               
+                let { entrySupplier, receiptType, receiptNumber, receiptSeries, tax } = data;
+                entrySupplier = entrySupplier.id;
+                receiptType = receiptType.id;
+                //Actualizamos el ingreso
+                await axios.put(`${ENTRIES_ENDPOINT}/${entryToUpdate?.id}`, {entrySupplier, receiptType, receiptNumber, receiptSeries, tax});
+
+            } else {
+
+                if(entryDetails.length < 1) {
+                    setError("Ingreso invalido. Debe tener al menos un artículo.");
+                    return;
+                }
+
+                let { entrySupplier, receiptType, receiptNumber, receiptSeries, tax } = data;
+    
+                entrySupplier = entrySupplier.id;
+                receiptType = receiptType.id;
+                
+                const resp = await axios.post(ENTRIES_ENDPOINT, {entrySupplier, receiptType, receiptNumber, receiptSeries, tax});
+                
+                entryDetails.map(async (entryDetail) => {
+                    let { item, purchasePrice, quantity, salePrice } = entryDetail;
+                    
+                    const entry = resp.data.id;
+                    item = item.id;
+
+                    await axios.post(ENTRY_DETAILS_ENDPOINT, {entry, item, purchasePrice, quantity, salePrice});
+                });
+            }
+
+            toast.info(`Ingreso ${entryToUpdate ? 'actualizado' : 'registrado'}satisfactoriamente.`, {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            history.push('/ingresos');
+        } catch (error) {
+            console.log(error);
+            setError(error?.response?.data?.message);
+        }
+            
+    });
+        
     return (
         <>
             <form onSubmit={onSubmit}>
@@ -213,11 +209,9 @@ export const EntryForm = () => {
 
                     <Grid item xs={4} sm={4} mt={-2}>     
                         {
-                            fetched 
-                            ?
                             <Controller
                                 control={control}
-                                name="receiptTypeObject"
+                                name="receiptType"
                                 render={({ field: { onChange, value }, fieldState: { error } }) => (
                                 <Autocomplete
                                     onChange={(event, item) => {
@@ -225,36 +219,32 @@ export const EntryForm = () => {
                                     }}
                                     options={receiptTypes}
                                     getOptionLabel={(item) => (item.name ? item.name : "")}
-                                    getOptionSelected={(option, value) =>
+                                    isOptionEqualToValue={(option, value) =>
                                     value === undefined || value === "" || option.id === value.id
                                     }
                                     value={value}
                                     renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Tipo de recibo"
-                                        margin="normal"
-                                        variant="outlined"
-                                        fullWidth
-                                        onChange={onChange}
-                                        error={!!error}
-                                    />
+                                        <TextField
+                                            {...params}
+                                            label="Tipo de recibo"
+                                            margin="normal"
+                                            variant="outlined"
+                                            fullWidth
+                                            value={value}
+                                            error={!!error}
+                                        />
                                     )}
                                 />
                             )}
                             />
-                            :
-                            <Skeleton height={90}/>
                         }        
                     </Grid>
 
                     <Grid item xs={4} sm={4} mt={-2}>     
                         {
-                            fetched 
-                            ?
                             <Controller
                                 control={control}
-                                name="entrySupplierObject"
+                                name="entrySupplier"
                                 render={({ field: { onChange, value }, fieldState: { error } }) => (
                                 <Autocomplete
                                     onChange={(event, item) => {
@@ -262,7 +252,7 @@ export const EntryForm = () => {
                                     }}
                                     options={suppliers}
                                     getOptionLabel={(item) => (item.name ? item.name : "")}
-                                    getOptionSelected={(option, value) =>
+                                    isOptionEqualToValue={(option, value) =>
                                     value === undefined || value === "" || option.id === value.id
                                     }
                                     value={value}
@@ -273,15 +263,13 @@ export const EntryForm = () => {
                                         margin="normal"
                                         variant="outlined"
                                         fullWidth
-                                        onChange={onChange}
+                                        value={value}
                                         error={!!error}
                                     />
                                     )}
                                 />
                             )}
                             />
-                            :
-                            <Skeleton height={90}/>
                         }        
                     </Grid>
 
@@ -292,112 +280,23 @@ export const EntryForm = () => {
                             size="large"
                             variant="contained"
                             color="primary">
-                            Registrar
+                            {
+                                entryToUpdate
+                                    ?
+                                    'Actualizar'
+                                    :
+                                    'Registrar'
+                            }
                         </Button>
                     </Box>
                 
                 </Grid>
             </form>
-            {
-                entryDetails.length > 0
-                &&
-                    <Grid item xs={12} sm={8}>
-                        <Card className="card-root" variant="outlined" >
-                            <CardContent >
-                                <TableContainer component={Paper}>
-                                    <Table aria-label="spanning table">
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell align="center" colSpan={3}>
-                                                    Detalles
-                                                </TableCell>
-                                                <TableCell>
-                                                    Precio
-                                                </TableCell>
-                                            </TableRow>
-                                            <TableRow>
-                                                {
-                                                    tableHeaders.map((t, i) => (
-                                                        <TableCell key={i}>{t.label}</TableCell>
-                                                    ))
-                                                }
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {
-                                                entryDetails.map((t, i) => (
-                                                    <TableRow role="checkbox" tabIndex={-1} key={i}>
-                                                        <TableCell>
-                                                            {t.itemObject.name}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            {t.quantity}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            {t.salePrice}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            {t.purchasePrice}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <DialogForm
-                                                                open={open}
-                                                                setOpen={setOpen}
-                                                                thing="Articulo"
-                                                                position={i}
-                                                                FormComponent={<AddEntryDetail 
-                                                                    categories={categories} 
-                                                                    setEntryDetails={setEntryDetails} 
-                                                                    entryDetail={t} 
-                                                                    position={i} 
-                                                                    entryDetails={entryDetails}
-                                                                />}
-                                                            />
-                                                            <RemoveCircleIcon       style={{color:"#ff3333"}}
-                                                            onClick={() => handleDeleteEntryDetail(i)}
-                                                            />
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))
-                                            }
-                                            <TableRow>
-                                                <TableCell rowSpan={3} />
-                                                <TableCell colSpan={2}>
-                                                    Subtotal
-                                                </TableCell>
-                                                <TableCell >
-                                                    {ccyFormat(invoiceSubtotal)}
-                                                </TableCell>
-                                            </TableRow>
-                                            <TableRow>
-                                                <TableCell>Impuesto</TableCell>
-                                                <TableCell>
-                                                    {watchTax  !== null ? watchTax + ' %' : undefined}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {ccyFormat(invoiceTaxes)}
-                                                </TableCell>
-                                            </TableRow>
-                                            <TableRow>
-                                                <TableCell colSpan={2}>
-                                                    Total
-                                                </TableCell>
-                                                <TableCell>
-                                                    {ccyFormat(invoiceTotal)}
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                            </CardContent>
-                        </Card>
-                    </Grid> 
-            }
-            <Box mt={5}>
-
-                <AddEntryDetail categories={categories} setEntryDetails={setEntryDetails} entryDetail={entryDetail} position={null} entryDetails={entryDetails}/>
-            </Box>
-            
+            <EntryDetailsTable
+                entryDetails={entryDetails}
+                setEntryDetails={setEntryDetails}
+                watchTax={watchTax}
+            />
         </>
     );
 };

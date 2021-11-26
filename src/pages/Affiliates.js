@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { getUserAffiliates } from './../actions/affiliatesActions';
 import dayjs from 'dayjs';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles  } from '@material-ui/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';

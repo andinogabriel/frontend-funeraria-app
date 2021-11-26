@@ -2,7 +2,6 @@ import { types } from '../types/types';
 
 const initialState = {
     brands: [],
-    totalPages: '',
     fetched: false
 };
 
@@ -13,7 +12,6 @@ export const brandsReducer = (state = initialState, action) => {
             return {
                 ...state,
                 brands: payload.brands,
-                totalPages: payload.totalPages,
                 fetched: payload.fetched 
             };
         case types.brandsAddNew:
@@ -24,6 +22,14 @@ export const brandsReducer = (state = initialState, action) => {
                     ...state.brands,
                     payload
                 ]
+            };
+        case types.brandsUpdated:
+            return {
+                ...state,
+                fetched: payload.fetched,
+                brands: state.brands.map(b => 
+                    (b.id === payload.id) ? payload : b
+                )
             };
         case types.brandsDeleted:
             return {

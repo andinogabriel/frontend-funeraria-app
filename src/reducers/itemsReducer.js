@@ -2,7 +2,6 @@ import { types } from './../types/types';
 
 const initialState = {
     items: [],
-    totalPages: '',
     fetched: false
 };
 
@@ -13,14 +12,12 @@ export const itemsReducer = (state = initialState, action) => {
             return {
                 ...state,
                 items: payload.items,
-                totalPages: payload.totalPages,
                 fetched: payload.fetched 
             };
         case types.itemsGetByCategory:
             return {
                 ...state,
                 items: payload.items,
-                totalPages: payload.totalPages,
                 fetched: payload.fetched
             };
         case types.itemsAddNew:

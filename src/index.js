@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { FunerariaApp } from './FunerariaApp';
 
 ReactDOM.render(
-  <FunerariaApp />,
+    <FunerariaApp />,
   document.getElementById('root')
 );
 

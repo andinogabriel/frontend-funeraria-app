@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import InfoIcon from '@material-ui/icons/Info';
+import InfoIcon from '@mui/icons-material/Info';
 import { Dialog, DialogContent, DialogContentText, DialogTitle, List, ListItem } from '@material-ui/core';
 
 
@@ -8,6 +8,7 @@ export const ItemInfo = ({item}) => {
     
     const [open, setOpen] = useState(false);
     const {name, description, code, itemImageLink, price, itemLength, itemHeight, itemWidth, stock, category, brand} = item;
+    console.log(itemImageLink);
     
     const itemInfo = [
         {label: 'Imagén', value: itemImageLink},
@@ -32,6 +33,7 @@ export const ItemInfo = ({item}) => {
             <InfoIcon
                 color="primary"
                 onClick={() => {setOpen(true)}}
+                style={{cursor: 'pointer'}}
             />
 
             <Dialog
@@ -62,19 +64,18 @@ export const ItemInfo = ({item}) => {
                                                 {
                                                     item.label !== 'Imagén'
                                                     ?
-                                                    item.label + item.value
+                                                        item.label + (item.value !== undefined ? item.value : " - ")
                                                     :
-                                                    
-                                                    <img 
-                                                        src={`https://funerariadb-images.s3-sa-east-1.amazonaws.com/${name}/${itemImageLink}`} 
-                                                        alt={name}
-                                                        className="image"
-                                                    />
+                                                        <img 
+                                                            src={itemImageLink} 
+                                                            alt={name}
+                                                            className="image"
+                                                        />
                                                 }
                                             </ListItem>
                                     :
                                         item.value !== null 
-                                        &&
+                                        && 
                                             <ListItem button divider key={index}>
                                                 {`${item.label}${item.value.name}`}
                                             </ListItem>

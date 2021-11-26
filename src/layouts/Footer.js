@@ -1,17 +1,20 @@
 import React from 'react';
-import {Navbar, Container, Col} from 'react-bootstrap';
+import { Typography  } from '@material-ui/core';
+
+
 
 export const Footer = () => {
 
-    let fullYear = new Date().getFullYear();
 
     return (
-        <Navbar fixed="bottom" bg="dark" variant="dark" expand="lg">
-            <Container>
-                <Col lg={12} className="text-center text-muted">
-                    <div>2021-{fullYear}, Proyecto Diseño de Sistemas</div>
-                </Col>
-            </Container>
-        </Navbar>
+        <footer className="footer">
+            <Typography variant="h6" align="center" gutterBottom>
+                Nuñez y Hnos
+            </Typography>
+            <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
+                Funeraria Nuñez y Hnos.
+                {'Copyright © '} {new Date().getFullYear()}
+            </Typography>
+        </footer>
     );
 };

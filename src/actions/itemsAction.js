@@ -3,27 +3,15 @@ import { types } from '../types/types';
 import { ITEMS_ENDPOINT } from '../helpers/endpoints';
 
 
-export const getItems = (categoryId, currentPage = 1, itemsPerPage = 5, sortBy = 'name', sortDir ='asc', searchName = '') =>{
+export const getItems = () =>{
     return async (dispatch) => {
         try {
-            let resp;
-            if(categoryId !== undefined && searchName.trim().length > 0) {
-                resp = await axios.get(`${ITEMS_ENDPOINT}/search/${categoryId}?name=${searchName}&page=${currentPage}&limit=${itemsPerPage}&sortBy=${sortBy}&sortDir=${sortDir}`);
-            } else if(categoryId !== undefined) {
-                resp = await axios.get(`${ITEMS_ENDPOINT}/category/${categoryId}?page=${currentPage}&limit=${itemsPerPage}&sortBy=${sortBy}&sortDir=${sortDir}`);
-            }
-            else if(searchName.trim().length > 0) {
-                resp = await axios.get(`${ITEMS_ENDPOINT}/search?name=${searchName}&page=${currentPage}&limit=${itemsPerPage}&sortBy=${sortBy}&sortDir=${sortDir}`);
-            } else {
-                resp = await axios.get(`${ITEMS_ENDPOINT}/paginated?page=${currentPage}&limit=${itemsPerPage}&sortBy=${sortBy}&sortDir=${sortDir}`);
-            }
-            
+            const resp = await axios.get(ITEMS_ENDPOINT);
             dispatch({
                 type: types.itemsGet,
                 payload: {
                     fetched: true,
-                    items: resp.data.content,
-                    totalPages: resp.data.totalPages,
+                    items: resp.data,
                 }
             });
         } catch (error) {
@@ -31,6 +19,7 @@ export const getItems = (categoryId, currentPage = 1, itemsPerPage = 5, sortBy =
         }
     };
 };
+
 
 
 export const addNewItem = (item) => {

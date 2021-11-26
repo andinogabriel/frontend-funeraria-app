@@ -1,14 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import { Link, useHistory } from 'react-router-dom';
-import { Form, Button, Col, Card } from 'react-bootstrap';
-import { useForm } from 'react-hook-form';
+import { useHistory } from 'react-router-dom';
+import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { toast } from 'react-toastify';
-import { GENDERS_ENDPOINT, RELATIONSHIPS_ENDPOINT, AFFILIATES_ENDPOINT } from '../../helpers/endpoints';
+import { GENDERS_ENDPOINT, AFFILIATES_ENDPOINT } from '../../helpers/endpoints';
 import { getUserAffiliates } from '../../actions/affiliatesActions';
 import { useDispatch } from 'react-redux';
+import { Grid, TextField } from '@mui/material';
+import DatePicker from '@mui/lab/DatePicker';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+
 
 const schema = yup.object().shape({
     firstName: yup.string().required(),
@@ -26,36 +30,19 @@ export const AffiliateForm = () => {
     const [genders, setGenders] = useState([]);
     const [relationships, setRelationships ] = useState([]);
     const [fetching, setFetching] = useState(true);
-    const [errores, setErrores] = useState({});
+    const [errores, setErrores] = useState(null);
     const history = useHistory();
     const dispatch = useDispatch();
 
-    useEffect( () => {
-        const fetchData = async () => {
-            try {
-                const resp1 = await axios.get(GENDERS_ENDPOINT);
-                const resp2 = await axios.get(RELATIONSHIPS_ENDPOINT);
-
-                setGenders(resp1.data);
-                setRelationships(resp2.data);
-                setFetching(false);
-            } catch (error) {
-                console.log(error);
-                //setErrores(error);
-            }
-        }
-        fetchData();
-    }, []); //Solo llamamos a la api cuando el componente se monta
-
-
-
     const { 
-        register, 
         handleSubmit, 
-        formState: { errors } 
+        formState: { errors },
+        control,
+        setValue
     } = useForm({resolver: yupResolver(schema)});
 
-    const onSubmit = async (data) => {
+    
+    const onSubmit = handleSubmit(async (data) => {
         console.log(data);
         const {firstName, lastName, dni, timestamp, affiliateGender, affiliateRelationship} = data;
         const date = new Date(timestamp);
@@ -74,120 +61,124 @@ export const AffiliateForm = () => {
                 draggable: true,
                 progress: undefined,
             });
-            
+            history.push('/mis-afiliados');
         } catch (error) {
-            setErrores(error.response.data.message);
+            //setErrores(error.response.data.message);
             console.log(errores);
             console.log(error);
         }
-        history.push('/mis-afiliados');
-    };
+    });
 
     return (
         <>
-        {
-            !fetching &&
-                <Card body bg="dark" text="light" className="mt-5">
-                <Card.Title><h2 className="text-align-center">Registrar afiliado</h2></Card.Title>
-                <hr/>
-                <Form onSubmit={handleSubmit(onSubmit)}>
-                    <Form.Row>
-                        <Form.Group as={Col} controlId="firstName">
-                        <Form.Label>Nombre</Form.Label>
-                        <Form.Control 
-                            className={`form-control ${errors?.firstName?.type === "required" && "is-invalid"}`}
-                            type="text" 
-                            placeholder="Nombre" 
-                            {...register("firstName", { required: true})}
-                        />
-                        </Form.Group>
+            {
+                !fetching &&
+                <form onSubmit={onSubmit}>
+                    <Grid container spacing={2}>
+                        {/*
+                            errores && errores.length &&
+                            <Grid item xs={12} sm={12}>
+                                <Alert severity="error" variant="outlined">
+                                    <Typography align="center" color="error">
+                                        {
+                                            errores.map(e => (
+                                                e?.message
+                                            ))
+                                        }
+                                    </Typography>
+                                </Alert>
+                            </Grid>*/
+                        }
 
-                        <Form.Group as={Col} controlId="lastName">
-                        <Form.Label>Apellido</Form.Label>
-                        <Form.Control 
-                            className={`form-control ${errors?.lastName?.type === "required" && "is-invalid"}`}
-                            type="text" 
-                            placeholder="Apellido" 
-                            {...register("lastName", { required: true})}
-                        />
-                        </Form.Group>
-                    </Form.Row>
-
-
-                    <Form.Row>
-                        <Form.Group as={Col} controlId="dni">
-                            <Form.Label>DNI</Form.Label>
-                            <Form.Control 
-                                className={`form-control ${errors?.dni?.type === "required" && "is-invalid"}`}
-                                type="number" 
-                                placeholder="DNI"
-                                {...register("dni", { required: true})} 
+                        <Grid item xs={6} sm={6}>
+                            <Controller
+                                name="firstName"
+                                control={control}
+                                defaultValue=""
+                                render={({ field: { onChange, value }, fieldState: { error } }) => (
+                                <TextField
+                                    label="Nombre"
+                                    variant="outlined"
+                                    fullWidth
+                                    color="primary"
+                                    value={value}
+                                    onChange={onChange}
+                                    error={!!error}
+                                />
+                                )}
                             />
-                            {
-                                <div className="text-danger text-small d-block mb-2 ml-3 col-lg-12 mb-4">
-                                    {errors.dni?.message}
-                                </div>
-                            }
-                        </Form.Group>
+                        </Grid>
 
-                        <Form.Group as={Col} controlId="timestamp">
-                            <Form.Label>Fecha de nacimiento</Form.Label>
-                            <Form.Control 
-                                className={`form-control ${errors?.birthDate?.type === "required" && "is-invalid"}`}
-                                type="date" 
-                                placeholder="Fecha de nacimiento" 
-                                {...register("timestamp", { required: true})} 
+                        <Grid item xs={6} sm={6}>
+                            <Controller
+                                name="lastName"
+                                control={control}
+                                defaultValue=""
+                                render={({ field: { onChange, value }, fieldState: { error } }) => (
+                                <TextField
+                                    label="Apellido"
+                                    variant="outlined"
+                                    fullWidth
+                                    color="primary"
+                                    value={value}
+                                    onChange={onChange}
+                                    error={!!error}
+                                />
+                                )}
                             />
-                            <div className="text-danger text-small d-block mb-2 ml-3 col-lg-12 mb-4">
-                                    {errors.birthDate?.message}
-                            </div>
-                        </Form.Group>
-                    </Form.Row>
+                        </Grid>
 
-                    <Form.Row>
-                        <Form.Group as={Col} controlId="affiliateGender">
-                            <Form.Label>Genero</Form.Label>
-                            <Form.Control 
-                                className={`form-control ${errors?.gender?.type === "required" && "is-invalid"}`}
-                                as="select" 
-                                {...register("affiliateGender", { required: true})}
-                                defaultValue="Seleccione el genero">
-                                {
-                                    !fetching &&
-                                        genders.map((gender, i) => (
-                                            <option value={gender.id} key={i}>{gender.name}</option>
-                                        ))
-                                }
-                            </Form.Control>
-                        </Form.Group>
+                        <Grid item xs={6} sm={6}>
+                            <Controller
+                                name="dni"
+                                control={control}
+                                defaultValue=""
+                                render={({ field: { onChange, value }, fieldState: { error } }) => (
+                                <TextField
+                                    label="DNI"
+                                    type="number"
+                                    variant="outlined"
+                                    fullWidth
+                                    color="primary"
+                                    value={value}
+                                    onChange={onChange}
+                                    error={!!error}
+                                />
+                                )}
+                            />
+                        </Grid>
+                        
+                        <Grid item xs={6} sm={6}>
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                <Controller
+                                    name="timestamp"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({ field: { onChange, value }, fieldState: { error } }) => (
+                                        <DatePicker
+                                            disableFuture
+                                            label="Responsive"
+                                            openTo="year"
+                                            views={['day', 'month', 'year']}
+                                            value={value}
+                                            onChange={(newValue) => {
+                                                setValue("timestamp", newValue);
+                                            }}
+                                            renderInput={(params) => <TextField {...params} 
+                                            />}
+                                        />
+                                    )}
+                                />
+                            </LocalizationProvider>  
+                        </Grid>
 
-                        <Form.Group as={Col} controlId="affiliateRelationship">
-                            <Form.Label>Parentesco</Form.Label>
-                            <Form.Control 
-                                className={`form-control ${errors?.relationship?.type === "required" && "is-invalid"}`}
-                                as="select" 
-                                {...register("affiliateRelationship", { required: true})}
-                                defaultValue="Seleccione su parentesco">
-                                {
-                                    !fetching &&
-                                        relationships.map((relationship, i) => (
-                                            <option key={i} value={relationship.id}>{relationship.name}</option>
-                                        ))
-                                }
-                            </Form.Control>
-                        </Form.Group>
-                    </Form.Row>
+                        
+                                
 
-                    <Button variant="secondary" size="lg" block type="submit">
-                        Registrar
-                    </Button>
-                    </Form>
-                <div className="mt-4">
-                    <Link to={"/mis-afiliados"}>Volver a mis afiliados</Link>
-                </div>
-            
-            </Card>
-        }
+                    </Grid>
+
+                </form>
+            }
         </>
     );
 };

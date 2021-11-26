@@ -7,7 +7,6 @@ import { LOGIN_ENDPOINT, USERS_ENDPOINT } from './../helpers/endpoints';
 
 //Dispatch en caso de llamar a otra accion
 export const startLoginUser = (userData, setErrores) =>  {
-    
     return async (dispatch) => {
         try {
             const resp  = await axios.post(LOGIN_ENDPOINT, userData, {
@@ -16,7 +15,6 @@ export const startLoginUser = (userData, setErrores) =>  {
                     'Content-Type': 'application/json'
                 }
             });
-            
             const {authorization, authorities} = resp.data;
 
             //Si es un usuario valido el endpoint de login devuelve el token
@@ -31,8 +29,7 @@ export const startLoginUser = (userData, setErrores) =>  {
 
             //Transformamos el array de objectos autoridad a un array que solo contiene los valores de la autoridad
             let userRoles = authorities.map(({authority}) => authority);
-            
-            const response  = await axios.get(USERS_ENDPOINT);
+            const response = await axios.get(`${USERS_ENDPOINT}/me`);
             const {firstName, lastName} = response.data;
             dispatch(setCurrentUser({
                 user: {
@@ -47,8 +44,8 @@ export const startLoginUser = (userData, setErrores) =>  {
           
             
         } catch (error) {
-            console.log(error);
-            setErrores(error?.response?.data?.message)
+            setErrores(error?.response?.data?.message);
+            console.log(error?.response?.data);
         }
     };
     
@@ -58,7 +55,7 @@ export const startLoginUser = (userData, setErrores) =>  {
 export const setCurrentUser = ({user, loggedIn, fetched}) => ({
     //Hay que pasarle el tipo y el payload para que en el reducer se puedan tomar decisiones y cambiar el estado en el reducer
     type: types.setCurrentUser,
-    payload: {user, loggedIn, fetched}
+    payload: {user, loggedIn, fetched: true}
 });
 
 export const logoutUser = () => dispatch => {

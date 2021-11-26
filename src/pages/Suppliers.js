@@ -1,58 +1,58 @@
-import React, { useEffect, useState } from 'react';
-import { SuppliersTable } from '../components/tables/SuppliersTable';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Box, Paper, Typography, Toolbar } from '@mui/material';
+import { AddCircle } from '@mui/icons-material';
+import { NavLink } from 'react-router-dom';
+import { SupplierTable } from './../components/tables/SupplierTable';
 import { getSuppliers } from './../actions/suppliersAction';
+
 
 export const Suppliers = () => {
     
-    
-    const [suppliersPerPage, setSuppliersPerPage] = useState(5);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [sortToggle, setSortToggle] = useState(true);
-    const [searchName, setSearchName] = useState('');
-    const {fetched, suppliers, totalPages} = useSelector(state => state.suppliers);
+    const {fetched, suppliers} = useSelector(state => state.suppliers);
     const dispatch = useDispatch();
 
+    /*
+    const {data: suppliers, isLoading} = useQuery(SUPPLIERS_QUERY_KEY, getAllSuppliers, {
+        retry: false
+    });
+    console.log(suppliers);*/
+
+   
+    
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const sortDir = sortToggle ? 'asc' : 'desc';
-                dispatch(getSuppliers(currentPage, suppliersPerPage, sortDir, searchName));
-                
+                dispatch(getSuppliers());
             } catch (error) {
                 console.log(error);
                 //setErrores(error);
             }
         }
         fetchData();
-    }, [sortToggle, currentPage, dispatch, searchName, suppliersPerPage]);
+    }, [dispatch]); 
 
-    const sortSuppliers = () => {
-        setSortToggle(!sortToggle);
-    };
-
-    if(fetched && currentPage > totalPages) {
-        setCurrentPage(totalPages);
-    }
     
     return (
-        <>
-            {
-                fetched &&
-                <SuppliersTable 
+        
+        <Box m={2} pt={5} >
+            <Paper>
+                <Toolbar className="table-root">
+                    <Typography className="table-title" variant="h6" id="tableTitle" component="div">
+                            Proveedores
+                    </Typography>    
+                    <div style={{"float":"right"}}>
+                        <NavLink to="/proveedor-formulario">
+                            <AddCircle style={{color:"#1662D2"}} fontSize="large"/>
+                        </NavLink>
+                    </div>    
+                </Toolbar>
+                <SupplierTable
                     suppliers={suppliers}
-                    sortToggle={sortToggle}
-                    sortSuppliers={sortSuppliers}
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    setCurrentPage={setCurrentPage}
-                    suppliersPerPage={suppliersPerPage}
-                    setSuppliersPerPage={setSuppliersPerPage}
-                    searchName={searchName}
-                    setSearchName={setSearchName}
+                    fetched={fetched}
                 />
-            }
-        </>
-           
+            </Paper>
+        </Box> 
+       
     );  
 };

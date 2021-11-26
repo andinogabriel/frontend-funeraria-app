@@ -4,23 +4,17 @@ import { SUPPLIERS_ENDPOINT } from './../helpers/endpoints';
 import { PropTypes } from 'prop-types';
 
 
-export const getSuppliers = (currentPage = 1, suppliersPerPage = 5, sortDir ='asc', searchName = '') => {
+export const getSuppliers = () => {
 
     return async (dispatch) => {
         try {
-            let resp;
-            if(searchName.trim().length > 0) {
-                resp = await axios.get(`${SUPPLIERS_ENDPOINT}/search/${searchName}?page=${currentPage}&limit=${suppliersPerPage}&sortBy=name&sortDir=${sortDir}`);
-            } else {
-                resp = await axios.get(`${SUPPLIERS_ENDPOINT}/paginated?page=${currentPage}&limit=${suppliersPerPage}&sortBy=name&sortDir=${sortDir}`);
-            }
+            const resp = await axios.get(SUPPLIERS_ENDPOINT);
             
             dispatch({
                 type: types.setSuppliers,
                 payload: {
                     fetched: true,
-                    suppliers: resp.data.content,
-                    totalPages: resp.data.totalPages,
+                    suppliers: resp.data,
                 }
             });
         } catch (error) {

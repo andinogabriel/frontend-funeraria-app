@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import { useForm, Controller  } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { TextField, Grid, Container, Avatar, Button, CssBaseline, Typography, Box } from "@material-ui/core";
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import { makeStyles } from '@material-ui/core/styles';
+import { TextField, Grid, Container, Avatar, Button, CssBaseline, Typography, Box } from '@mui/material';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import {makeStyles} from '@mui/styles';
+import { FormInputText } from './../inputsForms/FormInputText';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -13,32 +14,32 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: theme.spacing(2),
+        //padding: theme.spacing(2),
     
         '& .MuiTextField-root': {
-          margin: theme.spacing(1),
+          //margin: theme.spacing(1),
           width: '300px',
         },
         '& .MuiButtonBase-root': {
-          margin: theme.spacing(2),
+          //margin: theme.spacing(2),
         },
     },
     paper: {
-      marginTop: theme.spacing(1),
+      //marginTop: theme.spacing(1),
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
     },
     avatar: {
-      margin: theme.spacing(1),
-      backgroundColor: theme.palette.secondary.main,
+      //margin: theme.spacing(1),
+      backgroundColor: theme?.palette?.secondary?.main,
     },
     form: {
       width: '100%', // Fix IE 11 issue.
-      marginTop: theme.spacing(3),
+      //marginTop: theme.spacing(3),
     },
     submit: {
-      margin: theme.spacing(3, 0, 2),
+      //margin: theme.spacing(3, 0, 2),
     },
 }));
 
@@ -54,6 +55,14 @@ const schema = yup.object().shape({
         .oneOf([yup.ref('password'), null], 'Las contraseñas deben coincidir.')
         .required(''),
 });
+
+const inputs = [
+    {name: 'firstName', label: 'Nombre', type: 'text'},
+    {name: 'lastName', label: 'Apellido', type: 'text'},
+    {name: 'email', label: 'Email', type: 'email'},
+    {name: 'password', label: 'Contraseña', type: 'password'},
+    {name: 'rePassword', label: 'Confirmar contraseña', type: 'password'},
+];
 
 export const SignUpForm = ({onSubmitCallback}) => {
 
@@ -80,108 +89,32 @@ export const SignUpForm = ({onSubmitCallback}) => {
                 <Typography component="h1" variant="h5">Registrarse</Typography>
                 <form className={classes.form}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12} sm={6}>
-                            <Controller
-                                name="firstName"
-                                control={control}
-                                defaultValue=""
-                                render={({ field: { onChange, value }, fieldState: { error } }) => (
-                                <TextField
-                                    label="Nombre"
-                                    variant="filled"
-                                    fullWidth
-                                    value={value}
-                                    onChange={onChange}
-                                    error={!!error}
-                                    helperText={error ? error.message : null}
-                                />
-                                )}
-                                rules={{ required: 'El nombre es requerido.' }}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} sm={6}>
-                            <Controller
-                                name="lastName"
-                                control={control}
-                                defaultValue=""
-                                render={({ field: { onChange, value }, fieldState: { error } }) => (
-                                <TextField
-                                    label="Apellido"
-                                    variant="filled"
-                                    fullWidth
-                                    value={value}
-                                    onChange={onChange}
-                                    error={!!error}
-                                    helperText={error ? error.message : null}
-                                />
-                                )}
-                                rules={{ required: 'El apellido es requerido.' }}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12}>
-                            <Controller
-                                name="email"
-                                control={control}
-                                defaultValue=""
-                                render={({ field: { onChange, value }, fieldState: { error } }) => (
-                                <TextField
-                                    label="Email"
-                                    variant="filled"
-                                    fullWidth
-                                    value={value}
-                                    onChange={onChange}
-                                    error={!!error}
-                                    helperText={error ? error.message : null}
-                                    type="email"
-                                />
-                                )}
-                                rules={{ required: 'El email es requerido.' }}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12}>
-                            <Controller
-                                name="password"
-                                control={control}
-                                defaultValue=""
-                                render={({ field: { onChange, value }, fieldState: { error } }) => (
-                                <TextField
-                                    label="Contraseña"
-                                    variant="filled"
-                                    fullWidth
-                                    value={value}
-                                    onChange={onChange}
-                                    error={!!error}
-                                    helperText={error ? error.message : null}
-                                    type="password"
-                                />
-                                )}
-                                rules={{ required: 'La contraseña es requerida.'}}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12}>
-                            <Controller
-                                name="rePassword"
-                                control={control}
-                                defaultValue=""
-                                render={({ field: { onChange, value }, fieldState: { error } }) => (
-                                <TextField
-                                    label="Confirmar contraseña"
-                                    variant="filled"
-                                    fullWidth
-                                    value={value}
-                                    onChange={onChange}
-                                    error={!!error}
-                                    helperText={error ? error.message : null}
-                                    type="password"
-                                />
-                                )}
-                            />
-                        </Grid>
-
+                        {
+                            inputs.map(({name, label, type}, i) => (
+                                i < 2 
+                                ?
+                                <Grid item xs={12} sm={6} key={i}>
+                                    <FormInputText
+                                        name={name}
+                                        label={label}
+                                        type={type}
+                                        variant='filled'
+                                        control={control}
+                                    />
+                                </Grid>
+                                :
+                                <Grid item xs={12} key={i}>
+                                    <FormInputText
+                                        name={name}
+                                        label={label}
+                                        type={type}
+                                        variant='filled'
+                                        control={control}
+                                    />
+                                </Grid>
+                            ))
+                        }
+                    
                     </Grid>
 
                     <Box pt={2}>

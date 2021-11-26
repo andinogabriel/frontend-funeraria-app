@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { Container, Row, Col} from 'react-bootstrap';
+import { Container, Grid} from '@mui/material';
 import { startLoginUser } from './../actions/authActions';
 import { SignInForm } from './../components/forms/SignInForm';
-import { Typography, Alert, Grid } from '@material-ui/core';
 
 
 export const SignIn = () => {
@@ -32,12 +31,12 @@ export const SignIn = () => {
 
     
     return (
-        <Container className="mt-5">
-            <Row>
-                <Col sm="12" md={{span: 8, offset: 2}} lg={{span: 6, offset: 3}}>
+        <Container maxWidth="sm">
+            <Grid container spacing={2}>
+                <Grid item>
                     <SignInForm onSubmitCallback={login} errores={errores}/>
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
             
         </Container>
     )

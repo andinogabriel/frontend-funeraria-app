@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import InfoIcon from '@material-ui/icons/Info';
-import { Dialog, DialogTitle, DialogContent, DialogContentText, List, ListItem, Box } from '@material-ui/core';
+import InfoIcon from '@mui/icons-material/Info';
+import { Dialog, DialogTitle, DialogContent, DialogContentText, List, ListItem, Box } from '@mui/material';
 
 
 export const SupplierInfo = ({supplier}) => {
-    
-    
+
     const [open, setOpen] = useState(false);
 
     const {name, nif, webPage, email, mobileNumbers, addresses} = supplier;
@@ -22,6 +21,7 @@ export const SupplierInfo = ({supplier}) => {
             <InfoIcon
                 color="primary"
                 onClick={() => {setOpen(true)}}
+                style={{cursor: 'pointer'}}
             />
             <Dialog
                 open={open}
@@ -80,9 +80,9 @@ export const SupplierInfo = ({supplier}) => {
                                         <br/>
                                         {m.blockStreet !== null ? ` Altura: ${m.blockStreet}` : ' Altura: - '}
                                         <br/>
-                                        {m.apartment !== null ? ` Departamento: ${m.apartment}` : ' Departamento: - '}
+                                        {m?.apartment !== undefined ? ` Departamento: ${m.apartment}` : ' Departamento: - '}
                                         <br/>
-                                        {m.flat !== null ? ` Piso: ${m.flat}` : ' Piso: - '}
+                                        {m?.flat !== undefined ? ` Piso: ${m.flat}` : ' Piso: - '}
                                     </ListItem>
                                 ))
                                 :

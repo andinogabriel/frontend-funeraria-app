@@ -15,15 +15,9 @@ export const tokenCheck = async () => {
         const decoded = jwt_decode(localStorage.jwtToken); //Decodificamos lo que esta en authorization
        
         try {
-            const getUser = await axios.get(USERS_ENDPOINT, {
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-               }
-            });
-            
+            const getUser = await axios.get(`${USERS_ENDPOINT}/me`);
             const { lastName, firstName, roles } = getUser.data;
-            const userRoles = roles.map(({name}) => name);
+            const userRoles = roles?.map(({name}) => name);
             //Seteamos en nuestro store de User
             store.dispatch(setCurrentUser({
                 user: {
@@ -32,7 +26,8 @@ export const tokenCheck = async () => {
                     firstName,
                     userRoles
                 },
-                loggedIn: true
+                loggedIn: true,
+                fetched: true
             }));
         } catch (error) {
             console.log(error);

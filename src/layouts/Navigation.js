@@ -1,119 +1,69 @@
-import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
-import { logoutUser } from './../actions/authActions';
-import { ROLE_ADMIN } from './../helpers/constants';
+import React, { useState } from 'react'
+import { Link as RouterLink, NavLink } from "react-router-dom";
+import { Typography } from '@mui/material';
+import { Menu, Close } from '@mui/icons-material';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-      flexGrow: 1,
+
+const logoutHeadersData = [
+    {
+        label: "Articulos",
+        href: "/articulos",
     },
-    menuButton: {
-      marginRight: theme.spacing(2),
+    {
+        label: "Servicio",
+        href: "/services",
     },
-    title: {
-      flexGrow: 1,
+    {
+        label: "Iniciar sesión",
+        href: "/signin",
     },
-}));
+    {
+        label: "Registrarse",
+        href: "/signup",
+    },
+];
+
 
 export const Navigation = () => {
 
-    const {loggedIn, user} = useSelector(state => state.auth);
-    const { userRoles } = user;
-    const dispatch = useDispatch();
-    const classes = useStyles();
-    const [auth, setAuth] = React.useState(true);
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const open = Boolean(anchorEl);
-    
-    const logout = () => {
-        dispatch(logoutUser());
-    };
+    const [click, setClick] = useState(false);
 
-    /*
-    const handleChange = (event) => {
-        setAuth(event.target.checked);
-    }; */
-    
-      const handleMenu = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    
-      const handleClose = () => {
-        setAnchorEl(null);
-    };
+    const handleClick = () => setClick(!click);
+    const close = () => setClick(false);
 
     return (
-        <div className={classes.root}>  
-            <AppBar position="static" style={{ background: '#29323c' }}>
-                <Toolbar>
-                <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                    <MenuIcon />
-                </IconButton>
-                <Typography variant="h6" className={classes.title} component={NavLink} to="/" style={{ color: '#FFF',  textDecoration: 'none' }}>
-                    Funeraria Nuñez y Hnos.
-                </Typography>
-                {auth && (
-                    <div>
-                    <IconButton
-                        aria-label="account of current user"
-                        aria-controls="menu-appbar"
-                        aria-haspopup="true"
-                        onClick={handleMenu}
-                        color="inherit"
-                    >
-                        { loggedIn === true && `${user.lastName} ${user.firstName}`} 
-                        <AccountCircle />
-                    </IconButton>
-                    <Menu
-                        id="menu-appbar"
-                        autoFocus
-                        anchorEl={anchorEl}
-                        anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                        }}
-                        keepMounted
-                        transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                        }}
-                        open={open}
-                        onClose={handleClose}
+        <div>
+            <div className={click ? "main-container" : ""} onClick={()=>close()}>
+                <nav className="navbar" onClick={(e)=>e.stopPropagation()}>
+                    <div className="nav-container">
+                        <Typography variant="h6" component={RouterLink} to="/" className="nav-logo">
+                            Funeraria Nuñez y Hnos.
+                        </Typography>
+                        <ul className={click ? "nav-menu active" : "nav-menu"}>
+                            
+                            {
+                                logoutHeadersData.map(({label, href}, i) => (
+                                    <li className="nav-item" key={i}>
+                                        <NavLink
+                                            exact
+                                            to={href}
+                                            activeClassName="active"
+                                            className="nav-links"
+                                            onClick={click ? handleClick : null}
+                                        >
+                                            {label}
+                                        </NavLink>
+                                    </li>
+                                ))
+                            }
+                        </ul>
 
-                    >
-                        {
-                            !loggedIn 
-                                ?
-                                <div>
-                                    <MenuItem onClick={handleClose} component={Link} to="/signup">Crear cuenta</MenuItem>
-                                    <MenuItem onClick={handleClose} component={Link} to="/signin">Iniciar sesión</MenuItem>
-                                </div>
-                                :
-                                <div>
-                                    <MenuItem onClick={handleClose} component={Link} to="/mis-afiliados">Mis afiliados</MenuItem>
-                                    {
-                                        userRoles?.includes(ROLE_ADMIN) &&
-                                            <MenuItem onClick={handleClose} component={Link} to="/proveedores">Proveedores</MenuItem>
-                                    }
-                                    <MenuItem onClick={logout}>Cerrar sesión</MenuItem>
-                                </div>
-                        }
-                        
-                    </Menu>
+                        <div className="nav-icon" onClick={handleClick}>
+                            {click ? <Close/> : <Menu/>}
+                        </div>
                     </div>
-                )}
-                </Toolbar>
-            </AppBar>
+                </nav>
+            </div>
         </div>
     );
 };

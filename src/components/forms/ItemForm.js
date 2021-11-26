@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { Button, TextField, Autocomplete, Grid, Box, Alert } from '@material-ui/core';
-import { CATEGORIES_ENDPOINT, ITEMS_ENDPOINT, BRANDS_ENDPOINT } from '../../helpers/endpoints';
-import { getItems } from './../../actions/itemsAction';
+import { Button, TextField, Grid, Box, Autocomplete, Alert } from '@mui/material';
+import { ITEMS_ENDPOINT } from '../../helpers/endpoints';
+import { ItemFormSkeleton } from '../skeletons/ItemFormSkeleton';
 
 
 const validationSchema = yup.object().shape({
@@ -22,15 +22,16 @@ const validationSchema = yup.object().shape({
 });
 
 
-export const ItemForm = ({id, item}) => {
+export const ItemForm = ({id, item, fetching}) => {
 
-    const [categories, setCategories] = useState([]);
-    const [brands, setBrands] = useState([]);
-    const [fetched, setFetched] = useState(false);
     const [error, setError] = useState(null);
     const dispatch = useDispatch();
+    const { categories } = useSelector(state => state.categories);
+    const { brands, fetched } = useSelector(state => state.brands);
     const history = useHistory();
- 
+
+    console.log(brands);
+    console.log(categories);
 
     const { handleSubmit, control, setValue, watch } = useForm({defaultValues: { categoryObject: '', brandObject:null, name: '', price: '', description: '', image: '', itemLength: '', itemWidth: '', itemHeight: '' }, resolver: yupResolver(validationSchema)});
 
@@ -40,23 +41,17 @@ export const ItemForm = ({id, item}) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const resp = await axios.get(CATEGORIES_ENDPOINT);
-                const response = await axios.get(BRANDS_ENDPOINT);
-                setCategories(resp.data);
-                setBrands(response.data);
-                setFetched(true);
                 if(id !== null && item !== null) {
-                    const { brand, category, name, price, description, itemLength, itemHeight, itemWidth, itemImageLink } = item;
+                    const { brand, category, name, price, description, itemLength, itemHeight, itemWidth } = item;
                     setValue('name', name);
                     setValue('price', price);
                     setValue('description', description);
                     setValue('brandObject', brand);
                     setValue('categoryObject', category);
-                    setValue('image', itemImageLink);
+                    //setValue('image', itemImageLink);
                     setValue('itemLength', itemLength);
                     setValue('itemHeight', itemHeight);
-                    setValue('itemWidth', itemWidth);
-                    
+                    setValue('itemWidth', itemWidth);                   
                 }
             } catch (error) {
                 console.log(error);
@@ -64,7 +59,7 @@ export const ItemForm = ({id, item}) => {
         };
 
         fetchData();
-    }, [id, item, setValue]);
+    }, [id, item, setValue, dispatch]);
 
    
     const handleFileChange = (e) => {
@@ -72,24 +67,20 @@ export const ItemForm = ({id, item}) => {
     };
 
 
-    const onSubmit = handleSubmit(async (data) => {
-        
-        if(id) {
-            const { itemImageLink, code } = item;
-            const {brandObject, name, price, description, image, itemLength, itemHeight, itemWidth} = data;
-            
-            const category = watchCategoryObject.id;
-            const brand = brandObject.id;
-            console.log("Code: ", code);
-            console.log("Brand: ", brand);
-            console.log("Category: ", category);
-            console.log("Name: ", name);
-            console.log("Price: ", price);
-            try {
+    const onSubmit = handleSubmit(async (data) => {   
+        try {
+            if(id) {
+                const { code } = item;
+                const {brandObject, name, price, description, image, itemLength, itemHeight, itemWidth} = data;
+                console.log(data);
+                
+                const category = watchCategoryObject?.id;
+                const brand = brandObject.id;
+    
                 await axios.put(`${ITEMS_ENDPOINT}/${id}`, {category, brand, name, price, description, itemLength, itemHeight, itemWidth, code});
-                
-                
-                if(image !== itemImageLink && image !== null && image !== undefined) {
+
+                console.log(image);
+                if(image !== null && image !== undefined && image !== "") {
                     const formData = new FormData();
                     formData.append('file', image);
                     await axios.post(`${ITEMS_ENDPOINT}/${id}/image/upload`, 
@@ -101,25 +92,17 @@ export const ItemForm = ({id, item}) => {
                         }
                     );
                 }
-            } catch (error) {
-                console.log(error);
-                console.log(error.response.data.message);
-                setError(error.response.data.message)
-            }
-        } else {
-            const {brandObject, name, price, description, image, itemLength, itemHeight, itemWidth} = data;
-            const category = watchCategoryObject.id;
-            const brand = brandObject.id;
-
-            try {
+    
+            } else {
+                const {brandObject, name, price, description, image, itemLength, itemHeight, itemWidth} = data;
+                const category = watchCategoryObject.id;
+                const brand = brandObject.id;
+            
                 const resp = await axios.post(ITEMS_ENDPOINT, {category, brand, name, price, description, itemLength, itemHeight, itemWidth});
                 
-                if(image) {
+                if(image !== null && image !== undefined && image !== "") {
                     const formData = new FormData();
                     formData.append('file', image);
-                    
-                    console.log("FormData: ", formData);
-                    
                     await axios.post(`${ITEMS_ENDPOINT}/${resp.data.id}/image/upload`, 
                     formData, 
                         {
@@ -129,29 +112,31 @@ export const ItemForm = ({id, item}) => {
                         }
                     );
                 }
-            } catch (error) {
-                console.log(error);
             }
+            toast.info(`Artículo ${id ? 'actualizado' : 'registrado'} satisfactoriamente.`, {
+                position: "top-center",
+                autoClose: 2500,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            //await dispatch(getItems());
+            history.push('/articulos');
+        } catch(error) {
+            console.log(error.response);
+            setError(error.response.data.message);
         }
-        
-        toast.info(`Artículo ${id ? 'actualizado' : 'registrado'} satisfactoriamente.`, {
-            position: "top-center",
-            autoClose: 2500,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-        });
-        await dispatch(getItems());
-        history.push('/articulos');
     });
-
 
     return (
         <>
         {
-            fetched &&
+            fetching
+                ?
+                <ItemFormSkeleton/>
+                :
                 <form onSubmit={onSubmit}>
                     <Grid container spacing={2}>
                         {
@@ -255,7 +240,7 @@ export const ItemForm = ({id, item}) => {
                                     }}
                                     options={brands}
                                     getOptionLabel={(item) => (item.name ? item.name : "")}
-                                    getOptionSelected={(option, value) =>
+                                    isOptionEqualToValue={(option, value) =>
                                     value === undefined || value === "" || option.id === value.id
                                     }
                                     value={value}
@@ -265,6 +250,7 @@ export const ItemForm = ({id, item}) => {
                                         label="Marca"
                                         margin="normal"
                                         variant="outlined"
+                                        onChange={onChange}
                                     />
                                     )}
                                 />
@@ -279,11 +265,11 @@ export const ItemForm = ({id, item}) => {
                                 render={({ field: { onChange, value }, fieldState: { error } }) => (
                                     <Autocomplete
                                         onChange={(event, item) => {
-                                            setValue('categoryObject', item);
+                                            onChange(item);
                                         }}
                                         options={categories}
                                         getOptionLabel={(item) => (item.name ? item.name : "")}
-                                        getOptionSelected={(option, value) =>
+                                        isOptionEqualToValue={(option, value) =>
                                         value === undefined || value === "" || option.id === value.id
                                         }
                                         value={value}
@@ -294,7 +280,6 @@ export const ItemForm = ({id, item}) => {
                                                 margin="normal"
                                                 variant="outlined"
                                                 onChange={onChange}
-                                                value={value}
                                                 error={!!error}
                                             />
                                         )}
@@ -381,7 +366,7 @@ export const ItemForm = ({id, item}) => {
                                 fullWidth
                                 size="large"
                                 variant="contained"
-                                color="primary">
+                            >
                                 {
                                     id !== undefined 
                                         ?
@@ -390,10 +375,9 @@ export const ItemForm = ({id, item}) => {
                                         'Registrar'
                                 }
                             </Button>
-                        </Box>
-                        
+                        </Box> 
                     </Grid> 
-                </form> 
+            </form> 
         }         
         </>
     )

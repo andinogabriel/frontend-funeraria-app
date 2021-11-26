@@ -3,15 +3,14 @@ import axios from 'axios';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { Dialog, Button, DialogTitle, DialogContent, DialogActions, TextField, Grid, Autocomplete, Skeleton, Box } from '@material-ui/core';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import EditIcon from '@material-ui/icons/Edit';
+import { Dialog, Button, DialogTitle, DialogContent, DialogActions, TextField, Grid, Box, Autocomplete } from '@mui/material';
+import { Edit, AddCircleOutline } from '@mui/icons-material';
 import { ITEMS_ENDPOINT } from '../helpers/endpoints';
 
 
 const validationSchema = yup.object().shape({
-    categoryObject: yup.object().required(),
-    itemObject: yup.object().required(),
+    category: yup.object().required(),
+    item: yup.object().required(),
     quantity: yup.number().positive('La cantidad debe ser positiva').typeError('').required(),
     purchasePrice: yup.number().positive('El precio de compra debe ser positivo.').typeError('').required().typeError('').test(
         "maxDigitsAfterDecimal",
@@ -25,41 +24,44 @@ const validationSchema = yup.object().shape({
     )
 });
 
-export const AddEntryDetail = ({categories, setEntryDetails, entryDetail, position, entryDetails}) => {
+export const AddEntryDetail = ({categories, setEntryDetails, entryDetail, position, entryDetails, open, setOpen}) => {
 
-    
-    const [open, setOpen] = useState(false);
     const [fetched, setFetched] = useState(false);
     const [items, setItems] = useState([]);
+    const [currentCategory, setCurrentCategory] = useState(null);
     
-    const { handleSubmit, control, watch, formState: { isValid }, reset, setValue } = useForm({defaultValues: {categoryObject: null, itemObject: null}, resolver: yupResolver(validationSchema)});
+    const { handleSubmit, control, formState: { isValid }, reset, setValue } = useForm({defaultValues: {id: null, category: null, item: null, quantity: '', purchasePrice: '', salePrice: ''}, resolver: yupResolver(validationSchema)});
 
-    const watchCategoryObject = watch('categoryObject');
 
     useEffect(() => {
+        if(entryDetail !== null && position !== null) {
+            console.log(entryDetail);
+            const { id, item, quantity, purchasePrice, salePrice } = entryDetail;
+            setValue('id', id);
+            setValue('category', item?.category);
+            setValue('item', item);
+            setValue('quantity', quantity);
+            setValue('purchasePrice', purchasePrice);
+            setValue('salePrice', salePrice);
+        }
         const fetchData = async () => {
             try {
-                if(watchCategoryObject) {
-                    const resp = await axios.get(`${ITEMS_ENDPOINT}?categoryId=${watchCategoryObject.id}`);
+                if(currentCategory !== null && currentCategory !== undefined) {
+                    setValue('item', '');
+                    console.log(entryDetail);
+                    const resp = await axios.get(`${ITEMS_ENDPOINT}/category/${currentCategory?.id}`);
                     setItems(resp.data);
                     setFetched(true);
                 }
-
-                if(entryDetail) {
-                    const { categoryObject, itemObject, quantity, purchasePrice, salePrice } = entryDetail;
-                    setValue('categoryObject', categoryObject);
-                    setValue('itemObject', itemObject);
-                    setValue('quantity', quantity);
-                    setValue('purchasePrice', purchasePrice);
-                    setValue('salePrice', salePrice);
-                }
             } catch (error) {
                 console.log(error);
+                console.log(error?.response?.data?.message);
             }
         };
         fetchData();
-    }, [watchCategoryObject]);
+    }, [entryDetail, currentCategory, setValue, position]);
 
+   
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -67,18 +69,15 @@ export const AddEntryDetail = ({categories, setEntryDetails, entryDetail, positi
     const handleClose = () => {
         setOpen(false); 
         reset({
-            categoryObject: null, 
-            itemObject: null,
+            category: null, 
+            item: null,
             quantity: '',
             purchasePrice: '',
             salePrice: ''
         });
     };
 
-
-
     const onSubmit = handleSubmit(data => { 
-
         if(position !== null) {
             const clone = [...entryDetails];
             clone[position] = data;
@@ -93,11 +92,11 @@ export const AddEntryDetail = ({categories, setEntryDetails, entryDetail, positi
     return (
         <>
             {
-                entryDetail 
+                entryDetail
                     ?
-                    <EditIcon onClick={handleClickOpen} style={{color:"#1662D2"}}/>
+                    <Edit onClick={handleClickOpen} style={{color:"#1662D2", cursor: "pointer"}}/>
                     :
-                    <AddCircleOutlineIcon onClick={handleClickOpen} fontSize="large" style={{color:"#1662D2"}}/>
+                    <AddCircleOutline onClick={handleClickOpen} fontSize="large" style={{color:"#1662D2", cursor: "pointer"}}/>
             }
             
            
@@ -114,25 +113,20 @@ export const AddEntryDetail = ({categories, setEntryDetails, entryDetail, positi
                 <DialogContent>
                     <form onSubmit={onSubmit}>
                         <Grid container spacing={2}>
-
                             <Grid item xs={12} sm={6}>
-                            {
-                                categories.length > 0
-                                ?
                                 <Controller
                                     control={control}
-                                    name="categoryObject"
+                                    name="category"
                                     render={({ field: { onChange, value }, fieldState: { error } }) => (
                                         <Autocomplete
                                             onChange={(event, item) => {
-                                                onChange(item);
+                                                setCurrentCategory(item);
                                             }}
                                             options={categories}
                                             getOptionLabel={(item) => (item.name ? item.name : "")}
-                                            getOptionSelected={(option, value) =>
+                                            isOptionEqualToValue={(option, value) =>
                                             value === undefined || value === "" || option.id === value.id
                                             }
-                                            value={value}
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
@@ -140,34 +134,30 @@ export const AddEntryDetail = ({categories, setEntryDetails, entryDetail, positi
                                                     margin="normal"
                                                     variant="outlined"
                                                     fullWidth
-                                                    value={value}
                                                     onChange={onChange}
+                                                    value={value}
                                                     error={!!error}
                                                 />
                                             )}
                                         />
                                     )}
                                 />
-                                :
-                                    <Skeleton height={90}/>
-                                }
                             </Grid>
 
                             <Grid item xs={12} sm={6}>
                                 <Controller
                                     control={control}
-                                    name="itemObject"
+                                    name="item"
                                     render={({ field: { onChange, value }, fieldState: { error } }) => (
                                         <Autocomplete
-                                            onChange={(event, item) => {
-                                                onChange(item);
+                                            onChange={(event, it) => {
+                                                onChange(it);
                                             }}
                                             options={items}
-                                            getOptionLabel={(item) => (item.name ? item.name : "")}
-                                            getOptionSelected={(option, value) =>
+                                            getOptionLabel={(it) => (it.name ? it.name : "")}
+                                            isOptionEqualToValue={(option, value) =>
                                             value === undefined || value === "" || option.id === value.id
                                             }
-                                            value={value}
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
@@ -175,8 +165,8 @@ export const AddEntryDetail = ({categories, setEntryDetails, entryDetail, positi
                                                     margin="normal"
                                                     variant="outlined"
                                                     fullWidth
-                                                    value={value}
                                                     onChange={onChange}
+                                                    value={value}
                                                     error={!!error}
                                                 />
                                             )}
@@ -255,7 +245,7 @@ export const AddEntryDetail = ({categories, setEntryDetails, entryDetail, positi
                                     </Button>
                                     <Button type="submit" onClick={isValid ? handleClose() : undefined} color="primary">
                                         {
-                                            position !== null 
+                                            typeof(position) === 'number' 
                                                 ?
                                                 'Actualizar'
                                                 :

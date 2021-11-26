@@ -1,6 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Pagination } from '@material-ui/core';
+import {Pagination} from '@material-ui/lab';
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
