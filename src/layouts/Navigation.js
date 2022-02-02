@@ -21,6 +21,10 @@ const logoutHeadersData = [
         label: "Registrarse",
         href: "/signup",
     },
+    {
+        label: "Proveedores",
+        href: "/proveedores",
+    },
 ];
 
 
