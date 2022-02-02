@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
-import { Dialog, DialogContent, DialogContentText, DialogTitle, List, ListItem } from '@material-ui/core';
+import { Dialog, DialogContent, DialogContentText, DialogTitle, List, ListItem } from '@mui/material';
 
 
 export const ItemInfo = ({item}) => {

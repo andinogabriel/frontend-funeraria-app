@@ -128,7 +128,7 @@ export const SignUpForm = ({onSubmitCallback}) => {
                         </Button>
                     </Box>
 
-                    <Grid container justify="flex-end">
+                    <Grid container justifyContent="flex-end">
                         <Grid item>
                             <Box pt={1}>
                                 <Link to="/signin" style={{ color: '#FFF',  textDecoration: 'none' }}>

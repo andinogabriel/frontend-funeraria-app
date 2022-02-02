@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { IconButton, Button, MenuItem, Avatar, ListItemIcon, Tooltip, Divider } from '@material-ui/core';
-import { Logout, Menu,  Settings  } from '@material-ui/icons';
+import { IconButton, Button, MenuItem, Avatar, ListItemIcon, Tooltip, Divider } from '@mui/material';
+import { Logout, Menu,  Settings  } from '@mui/icons-material';
 import { ROLE_ADMIN } from './../../helpers/constants';
 import { logoutUser } from './../../actions/authActions';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';

@@ -1,8 +1,8 @@
 import React from 'react';
-import { Grid, TextField, Box } from '@material-ui/core';
+import { Grid, TextField, Box } from '@mui/material';
 import { DeleteButton } from '../buttons/DeleteButton';
 import { MOBILE_NUMBERS_ENDPOINT } from './../../helpers/endpoints';
-//import { makeStyles } from '@material-ui/styles';
+//import { makeStyles } from '@mui/styles';
 import { HighlightOff, AddCircleOutline } from '@mui/icons-material';
 
 
@@ -39,7 +39,7 @@ export const AddMobileNumbers = ({inputList, setInputList, initialValue}) => {
 
 
     return (
-        <Grid container direction="row" justify="flex-start" alignItems="flex-start" >
+        <Grid container direction="row" justifyContent="flex-start" alignItems="flex-start" >
         {
             inputList?.map((item, i) => (
                 <React.Fragment key={i}>
@@ -88,6 +88,6 @@ export const AddMobileNumbers = ({inputList, setInputList, initialValue}) => {
                 </React.Fragment>
             ))
         }
-        </Grid> 
+        </Grid>
     );
 };

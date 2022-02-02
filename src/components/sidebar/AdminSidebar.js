@@ -1,9 +1,9 @@
 import React from 'react';
 import clsx from 'clsx';
 import { Link } from 'react-router-dom';
-import { makeStyles } from '@material-ui/styles';
-import { Drawer, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import { AssignmentReturned, Category, Storefront, Menu, ListAlt, BrandingWatermark } from '@material-ui/icons';
+import { makeStyles } from '@mui/styles';
+import { Drawer, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { AssignmentReturned, Category, Storefront, Menu, ListAlt, BrandingWatermark } from '@mui/icons-material';
 
 const useStyles = makeStyles({
   list: {

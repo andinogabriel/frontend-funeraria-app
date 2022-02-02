@@ -1,5 +1,5 @@
 import React from 'react'
-import { Dialog, DialogTitle, DialogContent } from '@material-ui/core';
+import { Dialog, DialogTitle, DialogContent } from '@mui/material';
 import { useForm } from 'react-hook-form';
 
 export const DialogForm = ({open, setOpen, thing, position, FormComponent}) => {

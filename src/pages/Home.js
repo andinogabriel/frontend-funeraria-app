@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Typography, Grid, Button } from '@material-ui/core';
+import { Container, Typography, Grid, Button } from '@mui/material';
 
 
 export const Home = () => {

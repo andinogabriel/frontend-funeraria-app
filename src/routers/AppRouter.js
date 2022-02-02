@@ -17,7 +17,7 @@ import { Items } from './../pages/Items';
 import { AddOrUpdateBrand } from './../pages/AddOrUpdateBrand';
 import { Brands } from './../pages/Brands';
 import { ROLE_ADMIN } from './../helpers/constants';
-import { Container } from '@material-ui/core';
+import { Container } from '@mui/material';
 import { CategoriesRouter } from './components-router/CategoriesRouter';
 import { EntriesRouter } from './components-router/EntriesRouter';
 import { OurServices } from './../pages/OurServices';
